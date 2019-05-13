@@ -4,11 +4,24 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "android1": "react-native run-android",
+    "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug && cd .. && react-native run-android",
+    "ios": "react-native run-ios",
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.4.0",
+    "braces": "^3.0.2",
+    "metro-core": "^0.54.0",
+    "native-base": "^2.12.1",
     "react": "16.8.3",
-    "react-native": "0.59.8"
+    "react-native": "^0.59.8",
+    "react-native-config": "^0.11.7",
+    "react-native-navigation": "^2.18.5",
+    "react-native-vector-icons": "^6.4.2",
+    "react-redux": "^7.0.3",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
