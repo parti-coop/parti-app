@@ -5,6 +5,16 @@
    <BuildAction
       parallelizeBuildables = "NO"
       buildImplicitDependencies = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "sed -i &apos;&apos; &apos;s|~/Documents|$(HOME)/Documents|g&apos; ${SRCROOT}/../node_modules/react-native-fbsdk/ios/RCTFBSDK.xcodeproj/project.pbxproj&#10;"
+               shellToInvoke = "/bin/sh">
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"

@@ -126,19 +126,37 @@ export const authSetToken = (token, expiryTimestamp) => {
 };
 
 export const tryToSignIn = (authData) => {
+  let payload = {
+    client_id: Config.PARTI_KEY,
+    client_secret: Config.PARTI_SECRET,
+    provider: authData.provider,
+  }
+
+  switch(authData.provider) {
+    case 'email':
+      payload = {
+        ...payload,
+        grant_type: 'password',
+        email: authData.email,
+        password: authData.password
+      }
+      break;
+    case 'facebook':
+      payload = {
+        ...payload,
+        grant_type: 'assertion',
+        assertion: authData.assertion
+      }
+      break;
+    default:
+  }
+
   return async (dispatch) => {
     dispatch(uiStartLoading());
     try {
       let res = await fetch("http://parti.test/oauth/token", {
         method: "POST",
-        body: JSON.stringify({
-          email: authData.email,
-          password: authData.password,
-          client_id: Config.PARTI_KEY,
-          client_secret: Config.PARTI_SECRET,
-          grant_type: 'password',
-          provider: 'email',
-        }),
+        body: JSON.stringify(payload),
         headers: {
           'Accept': 'application/json',
           "Content-Type": "application/json"

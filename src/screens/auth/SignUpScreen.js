@@ -4,7 +4,7 @@ import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Navigation } from 'react-native-navigation';
 
-import { selectSignInTabOnAuth } from '../../screens/routes';
+import { selectSignInTabOnAuth, selectSignUpTabOnAuth } from '../../screens/routes';
 
 class SignUpScreen extends Component {
   goToSignInHandler = () => {
@@ -22,7 +22,7 @@ class SignUpScreen extends Component {
             <Text style={{ fontWeight: 'bold' }}>로그인하기</Text>
             <Icon
               size={15}
-              name={Platform.select({android: "md-arrow-round-forward", iso: "ios-arrow-round-forward"})}
+              name={Platform.select({android: "md-arrow-round-forward", ios: "ios-arrow-round-forward"})}
             />
         </Button>
       </View>

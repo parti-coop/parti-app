@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const NAV_ID_AUTH_TAB = 'authTab';
 const NAV_ID_SIGN_IN = 'signIn';
+const NAV_ID_EMAIL_SIGN_IN = 'emailSignIn';
 const NAV_ID_SIGN_UP = 'signUp';
 const NAV_ID_HOME = 'home';
 
@@ -26,8 +27,20 @@ export const goToAuth = async () => {
         id: NAV_ID_AUTH_TAB,
         children: [
           {
-            component: {
-              name: 'SignIn',
+            stack: {
+              id: NAV_ID_SIGN_IN,
+              children: [
+                {
+                  component: {
+                    name: 'SignIn',
+                    options: {
+                      topBar: {
+                        visible: false
+                      }
+                    }
+                  }
+                },
+              ],
               options: {
                 bottomTab: {
                   text: 'Sign In',
@@ -38,10 +51,11 @@ export const goToAuth = async () => {
                   animate: false
                 }
               }
-            },
+            }
           },
           {
             component: {
+              id: NAV_ID_SIGN_UP,
               name: 'SignUp',
               options: {
                 bottomTab: {
@@ -61,20 +75,35 @@ export const goToAuth = async () => {
   });
 }
 
-
 export const selectSignInTabOnAuth = () => Navigation.mergeOptions(
   NAV_ID_AUTH_TAB, {
-  bottomTabs: {
-    currentTabIndex: 'SignIn'
-  }
+    bottomTabs: {
+      currentTabId: NAV_ID_SIGN_IN
+    }
 });
 
 export const selectSignUpTabOnAuth = () => Navigation.mergeOptions(
   NAV_ID_AUTH_TAB, {
-  bottomTabs: {
-    currentTabIndex: 'SignUp'
-  }
+    bottomTabs: {
+      currentTabId: NAV_ID_SIGN_UP
+    }
 });
+
+export const goToEmailSignIn = (componentId) => Navigation.push(
+  componentId, {
+    component: {
+      id: NAV_ID_EMAIL_SIGN_IN,
+      name: 'EmailSignIn',
+      options: {
+        topBar: {
+          title: {
+            text: '이메일 로그인'
+          }
+        }
+      }
+    }
+  }
+);
 
 export const goHome = () => Navigation.setRoot({
   root: {

@@ -1,94 +1,78 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-import { Platform, View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { Button, Form, Item } from 'native-base';
+import { Platform, View, Text, StyleSheet } from 'react-native';
+import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Navigation } from 'react-native-navigation';
+import { LoginManager, AccessToken } from "react-native-fbsdk";
 
-import { selectSignUpTabOnAuth } from '../../screens/routes';
-import { tryToSignIn } from "../../store/actions/index";
+import { goToEmailSignIn, selectSignUpTabOnAuth } from '../../screens/routes';
 import BasicInput from "../../components/BasicInput";
+import { tryToSignIn } from "../../store/actions/index";
 
 class SignInScreen extends Component {
-  state = {
-    controls: {
-      email: {
-        value: ""
-      },
-      password: {
-        value: ""
-      }
-    }
-  };
-
   goToSignUpHandler = () => {
     selectSignUpTabOnAuth();
   }
 
-  tryToSignInHandler = () => {
+  goToEmailSignInHandler = () => {
+    goToEmailSignIn(this.props.componentId);
+  }
+
+  tryToSignInHandler = (accessToken) => {
     const authData = {
-      email: this.state.controls.email.value,
-      password: this.state.controls.password.value
+      provider: 'facebook',
+      assertion: accessToken
     };
     this.props.onTryToSignIn(authData);
   }
 
-  updateInputState = (key, value) => {
-    this.setState(prevState => {
-      return {
-        controls: {
-          ...prevState.controls,
-          [key]: {
-            ...prevState.controls[key],
-            value: value
-          }
-        }
-      };
-    });
-  };
+  facebookSignInHandler = async () => {
+    try {
+      let result = await LoginManager.logInWithReadPermissions(["email"]);
+      if (result.isCancelled) {
+        alert('취소했습니다.');
+      } else {
+        const data = await AccessToken.getCurrentAccessToken();
+        this.tryToSignInHandler(data.accessToken.toString());
+      }
+    } catch(err) {
+      console.log(err);
+      alert("앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.");
+    }
+  }
 
   render() {
     return (
       <View style={styles.container}>
-        <Form style={styles.signInForm}>
-          <Item>
-            <BasicInput
-              placeholder="이메일"
-              keyboardType="email-address"
-              value={this.state.controls.email.value}
-              onChangeText={val => this.updateInputState("email", val)}/>
-          </Item>
-          <Item>
-            <BasicInput
-              placeholder="비밀번호"
-              value={this.state.controls.password.value}
-              onChangeText={val => this.updateInputState("password", val)}
-              secureTextEntry/>
-          </Item>
-          <View style={styles.signInControlContainer}>
-            { this.props.isLoading ?
-              (
-                <ActivityIndicator style={styles.signInIndicator} />
-              )
-              :
-              (
-                <Button primary style={styles.signInButton}
-                  onPress={this.tryToSignInHandler}>
-                  <Text style={styles.signInButtonText}>로그인</Text>
-                </Button>
-              )
-            }
-          </View>
-        </Form>
+        <View style={styles.signInControlContainer}>
+          <Button primary style={styles.signInButton}
+            onPress={this.facebookSignInHandler}>
+            <Icon
+              size={28}
+              color="white"
+              name="logo-facebook"
+            />
+            <Text style={styles.signInButtonText}> 페이스북 로그인</Text>
+          </Button>
+          <Button primary style={styles.signInButton}
+            onPress={this.goToEmailSignInHandler}>
+            <Icon
+              size={28}
+              color="white"
+              name={Platform.select({android: "md-mail", ios: "ios-mail"})}
+            />
+            <Text style={styles.signInButtonText}> 이메일 로그인</Text>
+          </Button>
+        </View>
         <Button transparent dark
           style={{ alignSelf: 'center' }}
           onPress={this.goToSignUpHandler}>
-            <Text>처음 오셨습니까? </Text>
-            <Text style={{ fontWeight: 'bold' }}>가입하기</Text>
-            <Icon
-              size={15}
-              name={Platform.select({android: "md-arrow-round-forward", iso: "ios-arrow-round-forward"})}
-            />
+          <Text>처음 오셨습니까? </Text>
+          <Text style={{ fontWeight: 'bold' }}>가입하기</Text>
+          <Icon
+            size={15}
+            name={Platform.select({android: "md-arrow-round-forward", ios: "ios-arrow-round-forward"})}
+          />
         </Button>
       </View>
     );
@@ -101,9 +85,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  signInForm: {
-    width: '80%'
-  },
   signInControlContainer: {
     width: '50%',
     marginTop: 15,
@@ -113,21 +94,13 @@ const styles = StyleSheet.create({
   signInButton: {
     width: '100%',
     justifyContent: 'center',
-    alignSelf: 'center'
-  },
-  signInIndicator: {
-    height: 45,
+    alignSelf: 'center',
+    marginBottom: 6
   },
   signInButtonText: {
     color: 'white'
   }
 });
-
-const mapStateToProps = state => {
-  return {
-    isLoading: state.ui.isLoading
-  };
-};
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -135,4 +108,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignInScreen);
+export default connect(null, mapDispatchToProps)(SignInScreen);

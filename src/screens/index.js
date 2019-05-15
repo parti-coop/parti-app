@@ -5,6 +5,9 @@ export function registerScreens(store, provider) {
     'Initializing', () => require('./InitializingScreen').default,
     provider, store);
   Navigation.registerComponentWithRedux(
+    'EmailSignIn', () => require('./auth/EmailSignInScreen').default,
+    provider, store);
+  Navigation.registerComponentWithRedux(
     'SignIn', () => require('./auth/SignInScreen').default,
     provider, store);
   Navigation.registerComponent(
