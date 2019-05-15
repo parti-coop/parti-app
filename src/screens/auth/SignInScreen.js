@@ -7,7 +7,7 @@ import { LoginManager, AccessToken } from "react-native-fbsdk";
 
 import { goToEmailSignIn, selectSignUpTabOnAuth } from '../../screens/routes';
 import BasicInput from "../../components/BasicInput";
-import { tryToSignIn } from "../../store/actions/index";
+import { authSignIn } from "../../store/actions/index";
 
 class SignInScreen extends Component {
   goToSignUpHandler = () => {
@@ -18,12 +18,12 @@ class SignInScreen extends Component {
     goToEmailSignIn(this.props.componentId);
   }
 
-  tryToSignInHandler = (accessToken) => {
+  signInHandler = (accessToken) => {
     const authData = {
       provider: 'facebook',
       assertion: accessToken
     };
-    this.props.onTryToSignIn(authData);
+    this.props.onSignIn(authData);
   }
 
   facebookSignInHandler = async () => {
@@ -33,7 +33,7 @@ class SignInScreen extends Component {
         alert('취소했습니다.');
       } else {
         const data = await AccessToken.getCurrentAccessToken();
-        this.tryToSignInHandler(data.accessToken.toString());
+        this.signInHandler(data.accessToken.toString());
       }
     } catch(err) {
       console.log(err);
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => {
   return {
-    onTryToSignIn: (authData) => dispatch(tryToSignIn(authData))
+    onSignIn: (authData) => dispatch(authSignIn(authData))
   };
 };
 

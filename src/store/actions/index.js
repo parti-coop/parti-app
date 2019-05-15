@@ -1,1 +1,4 @@
-export { authGetToken, authAutoSignIn, tryToSignIn, authLogout } from "./auth";
+export { authGetToken } from "./accessToken";
+export { authAutoSignIn, authSignIn, authSignOut } from "./auth";
+export { messagesGetNewCounts } from "./messages";
+export { currentUserPrepare } from "./currentUser";

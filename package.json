@@ -13,6 +13,7 @@
     "@react-native-community/async-storage": "^1.4.0",
     "adm-zip": "^0.4.13",
     "braces": "^3.0.2",
+    "immutability-helper": "^3.0.0",
     "metro-core": "^0.54.1",
     "native-base": "^2.12.1",
     "plist": "^3.0.1",

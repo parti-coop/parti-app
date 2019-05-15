@@ -5,7 +5,7 @@ import { Button, Form, Item } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { selectSignUpTabOnAuth } from '../../screens/routes';
-import { tryToSignIn } from "../../store/actions/index";
+import { authSignIn } from "../../store/actions/index";
 import BasicInput from "../../components/BasicInput";
 
 class EmailSignInScreen extends Component {
@@ -20,13 +20,13 @@ class EmailSignInScreen extends Component {
     }
   };
 
-  tryToSignInHandler = () => {
+  signInHandler = () => {
     const authData = {
       provider: 'email',
       email: this.state.controls.email.value,
       password: this.state.controls.password.value
     };
-    this.props.onTryToSignIn(authData);
+    this.props.onSignIn(authData);
   }
 
   updateInputState = (key, value) => {
@@ -69,7 +69,7 @@ class EmailSignInScreen extends Component {
               :
               (
                 <Button primary style={styles.signInButton}
-                  onPress={this.tryToSignInHandler}>
+                  onPress={this.signInHandler}>
                   <Text style={styles.signInButtonText}>로그인</Text>
                 </Button>
               )
@@ -117,7 +117,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onTryToSignIn: (authData) => dispatch(tryToSignIn(authData))
+    onSignIn: (authData) => dispatch(authSignIn(authData))
   };
 };
 
