@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 
-import { currentUserPrepare } from '../store/actions/index';
+import { currentUserLoadInfo, currentUserLoadGroups } from '../store/actions/index';
 
 class CurrentUserAware extends Component {
   constructor(props) {
     super(props);
-    this.props.onCurrentUserPrepare();
-    console.log('test');
+    this.props.onCurrentUserLoadInfo();
+    if(props.groups) {
+      this.props.onCurrentUserLoadGroups();
+    }
   }
 
   render() {
@@ -17,8 +19,10 @@ class CurrentUserAware extends Component {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onCurrentUserPrepare: () => dispatch(currentUserPrepare())
+    onCurrentUserLoadInfo: () => dispatch(currentUserLoadInfo()),
+    onCurrentUserLoadGroups: () => dispatch(currentUserLoadGroups()),
   };
 };
 
 export default connect(null, mapDispatchToProps)(CurrentUserAware);
+

@@ -1,29 +1,52 @@
-import { CURRENT_USER_SET_DATA, CURRENT_USER_REMOVE_DATA } from "./actionTypes";
+import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } from "./actionTypes";
 import { fetchPartiAPI } from './partiFetcher';
 
-export const currentUserSetData = (nickname) => {
+export const currentUserSetInfo = (nickname) => {
   return {
-    type: CURRENT_USER_SET_DATA,
+    type: CURRENT_USER_SET_INFO,
     nickname: nickname,
   };
 };
 
-export const currentUserRemoveData = () => {
+export const currentUserSetGroups = (groups) => {
   return {
-    type: CURRENT_USER_REMOVE_DATA
+    type: CURRENT_USER_SET_GROUPS,
+    groups: groups,
   };
 };
 
-export const currentUserPrepare = () => {
+export const currentUserRemove = () => {
+  return {
+    type: CURRENT_USER_REMOVE
+  };
+};
+
+export const currentUserLoadInfo = () => {
   return async (dispatch) => {
     try {
       const res = await fetchPartiAPI(dispatch, "/users/current_user");
       if(!res) {
-        console.log("Error on currentUserPrepare");
+        console.log("Error on currentUserLoadInfo");
         return;
       }
 
-      await dispatch(currentUserSetData(res.nickname));
+      await dispatch(currentUserSetInfo(res.nickname));
+    } catch(err) {
+      console.log(err);
+    }
+  };
+};
+
+export const currentUserLoadGroups = () => {
+  return async (dispatch) => {
+    try {
+      const res = await fetchPartiAPI(dispatch, "/home/groups");
+      if(!res) {
+        console.log("Error on currentUserLoadGroups");
+        return;
+      }
+
+      await dispatch(currentUserSetGroups(res));
     } catch(err) {
       console.log(err);
     }

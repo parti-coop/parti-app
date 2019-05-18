@@ -33,7 +33,9 @@ export const fetchPartiAPI = async (dispatch, path, options) => {
 
   try {
     const res = await fetch(`${Config.PARTI_API_BASE_URL}/api/v1${path}`, resultOption);
-    return await res.json();
+    result = await res.json();
+    console.log(result);
+    return result;
   } catch(err) {
     console.log("fetchPartiAPI error")
     console.log(err);

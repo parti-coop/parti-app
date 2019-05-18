@@ -3,9 +3,9 @@ import Config from 'react-native-config'
 import { goToAuth, goHome } from '../../screens/routes';
 import { uiStartLoading, uiStopLoading } from "./ui";
 import { authGetToken, authCreateToken, authClearStorage, authRemoveToken } from "./accessToken";
-import { currentUserPrepare } from "./currentUser";
+import { currentUserLoadInfo } from "./currentUser";
 import { messagesRemoveNewCounts } from "./messages";
-import { currentUserRemoveData } from "./currentUser";
+import { currentUserRemove } from "./currentUser";
 
 export const authAutoSignIn = () => {
   return async (dispatch) => {
@@ -29,7 +29,7 @@ export const authSignIn = (authData) => {
         return;
       }
 
-      await dispatch(currentUserPrepare());
+      await dispatch(currentUserLoadInfo());
 
       goHome();
       dispatch(uiStopLoading());
@@ -46,7 +46,7 @@ export const authSignOut = () => {
     await dispatch(authClearStorage());
     await dispatch(authRemoveToken());
     await dispatch(messagesRemoveNewCounts());
-    await dispatch(currentUserRemoveData());
+    await dispatch(currentUserRemove());
     goToAuth();
   };
 };
