@@ -4,8 +4,9 @@ import { View, FlatList, Image, ScrollView, SectionList, StyleSheet, Platform } 
 import { Root, Content, Text, ActionSheet } from 'native-base';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-import { authSignOut, messagesGetNewCounts } from '../store/actions/index';
+import { authSignOut, messagesGetNewCounts, uiStartLoading, uiStopLoading } from '../store/actions/index';
 import CurrentUserAware from './CurrentUserAware';
 import ChannelListHorizontal from '../components/ChannelListHorizontal';
 
@@ -56,6 +57,7 @@ class HomeScreen extends Component {
     this.setupTopBar();
     this.navButtonListener = Navigation.events().registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
     this.navComponentDidAppearListener = Navigation.events().registerComponentDidAppearListener(this.componentDidAppearHandler);
+    this.props.onStartLoading();
   }
 
   componentDidAppearHandler =  ({ componentId, componentName }) => {
@@ -75,7 +77,10 @@ class HomeScreen extends Component {
   }
 
   render() {
-
+    let loadCompleted = !!this.props.currentUser.nickname && this.props.newMessagesCount >= 0 && this.props.newMentionsCount >= 0;
+    if(loadCompleted) {
+      this.props.onStopLoading();
+    }
 
     let newCountTexts = [];
     if(this.props.newMessagesCount && this.props.newMessagesCount > 0) {
@@ -99,7 +104,7 @@ class HomeScreen extends Component {
       }
     }
 
-    let groupsAsSections = this.props.currentUser.groups.map((group) => {
+    let groupsAsSections = this.props.currentUser?.groups?.map((group) => {
       let data;
       if(group.categories === null)
         data= [{
@@ -142,17 +147,21 @@ class HomeScreen extends Component {
 
     return (
       <Root>
+        <Spinner
+          visible={this.props.isLoading}
+          textContent={'로딩 중...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <SectionList
-          ListHeaderComponent={(
-            <View key={ Math.random().toString(36).substring(2, 15) }
-              style={{ alignItems: 'center', paddingTop: 10, paddingBottom: 10 }}>
+          ListHeaderComponent={
+            loadCompleted && <View style={{ alignItems: 'center', paddingTop: 10, paddingBottom: 10 }}>
               <Text style={styles.welcome}>
                 안녕하세요,
                 {this.props.currentUser.nickname}님!
               </Text>
               <Text>{subWelcome}</Text>
             </View>
-          )}
+          }
           renderSectionHeader={({section: {group}}) => (
             <View>
               <View
@@ -188,7 +197,10 @@ class HomeScreen extends Component {
 const styles = StyleSheet.create({
   welcome: {
     fontSize: 24
-  }
+  },
+  spinnerTextStyle: {
+    color: '#fff'
+  },
 });
 
 const mapStateToProps = state => {
@@ -196,6 +208,7 @@ const mapStateToProps = state => {
     currentUser: state.currentUser,
     newMessagesCount: state.messages.newMessagesCount,
     newMentionsCount: state.messages.newMentionsCount,
+    isLoading: state.ui.isLoading
   }
 };
 
@@ -203,6 +216,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onMessageGetNewCounts: () => dispatch(messagesGetNewCounts()),
     onSignOut: () => dispatch(authSignOut()),
+    onStartLoading: () => dispatch(uiStartLoading()),
+    onStopLoading: () => dispatch(uiStopLoading()),
   };
 };
 

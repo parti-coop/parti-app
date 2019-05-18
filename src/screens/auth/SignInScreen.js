@@ -4,6 +4,7 @@ import { Platform, View, Text, StyleSheet } from 'react-native';
 import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { LoginManager, AccessToken } from "react-native-fbsdk";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { goToEmailSignIn, selectSignUpTabOnAuth } from '../../screens/routes';
 import BasicInput from "../../components/BasicInput";
@@ -44,6 +45,11 @@ class SignInScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Spinner
+          visible={this.props.isLoading}
+          textContent={'로딩 중...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <View style={styles.signInControlContainer}>
           <Button primary style={styles.signInButton}
             onPress={this.facebookSignInHandler}>
@@ -99,8 +105,17 @@ const styles = StyleSheet.create({
   },
   signInButtonText: {
     color: 'white'
-  }
+  },
+  spinnerTextStyle: {
+    color: '#fff'
+  },
 });
+
+const mapStateToProps = state => {
+  return {
+    isLoading: state.ui.isLoading
+  }
+}
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -108,4 +123,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(SignInScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(SignInScreen);

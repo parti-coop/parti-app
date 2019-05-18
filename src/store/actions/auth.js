@@ -30,8 +30,7 @@ export const authSignIn = (authData) => {
       }
 
       await dispatch(currentUserLoadInfo());
-
-      goHome();
+      await goHome();
       dispatch(uiStopLoading());
     } catch(err) {
       console.log(err);
