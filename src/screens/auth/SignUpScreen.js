@@ -4,11 +4,11 @@ import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Navigation } from 'react-native-navigation';
 
-import { selectSignInTabOnAuth, selectSignUpTabOnAuth } from '../../screens/routes';
+import { goToAuthRootSignIn } from '../../screens/routes';
 
 class SignUpScreen extends Component {
   goToSignInHandler = () => {
-    selectSignInTabOnAuth();
+    goToAuthRootSignIn();
   }
 
   render() {

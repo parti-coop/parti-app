@@ -30,23 +30,7 @@ export const currentUserLoadInfo = () => {
         return;
       }
 
-      await dispatch(currentUserSetInfo(res.nickname));
-    } catch(err) {
-      console.log(err);
-    }
-  };
-};
-
-export const currentUserLoadGroups = () => {
-  return async (dispatch) => {
-    try {
-      const res = await fetchPartiAPI(dispatch, "/home/groups");
-      if(!res) {
-        console.log("Error on currentUserLoadGroups");
-        return;
-      }
-
-      await dispatch(currentUserSetGroups(res));
+      dispatch(currentUserSetInfo(res.nickname));
     } catch(err) {
       console.log(err);
     }

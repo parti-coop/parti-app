@@ -14,6 +14,7 @@ const ChannelListHorizontal = props => {
     style={{ width: '100%', height: 150 }}
     horizontal={ true }
     showsHorizontalScrollIndicator={ false } >
+    <Text>{ props.hasChannelsJoinable }</Text>
     {
       props.channels.map((channel) => (
         <ChannelCard

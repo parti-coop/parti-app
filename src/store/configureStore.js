@@ -1,16 +1,21 @@
 import { createStore, combineReducers, compose, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
+import { createReducer } from 'redux-orm';
 
 import authReducer from "./reducers/auth";
 import currentUserReducer from "./reducers/currentUser";
 import messagesReducer from "./reducers/messages";
+import homeReducer from "./reducers/home";
 import uiReducer from "./reducers/ui";
+import orm from './models';
 
 const rootReducer = combineReducers({
   auth: authReducer,
   currentUser: currentUserReducer,
   ui: uiReducer,
-  messages: messagesReducer
+  messages: messagesReducer,
+  home: homeReducer,
+  orm: createReducer(orm)
 });
 
 let composeEnhancers = compose;

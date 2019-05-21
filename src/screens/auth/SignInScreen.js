@@ -6,17 +6,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { LoginManager, AccessToken } from "react-native-fbsdk";
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import { goToEmailSignIn, selectSignUpTabOnAuth } from '../../screens/routes';
+import { goToAuthRootEmailSignIn, goToAuthRootSignUp } from '../../screens/routes';
 import BasicInput from "../../components/BasicInput";
 import { authSignIn } from "../../store/actions/index";
 
 class SignInScreen extends Component {
   goToSignUpHandler = () => {
-    selectSignUpTabOnAuth();
+    goToAuthRootSignUp();
   }
 
   goToEmailSignInHandler = () => {
-    goToEmailSignIn(this.props.componentId);
+    goToAuthRootEmailSign(this.props.componentId);
   }
 
   signInHandler = (accessToken) => {

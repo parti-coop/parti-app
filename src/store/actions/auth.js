@@ -1,6 +1,6 @@
 import Config from 'react-native-config'
 
-import { goToAuth, goHome } from '../../screens/routes';
+import { goToAuthRoot, goToHomeRoot } from '../../screens/routes';
 import { uiStartLoading, uiStopLoading } from "./ui";
 import { authGetToken, authCreateToken, authClearStorage, authRemoveToken } from "./accessToken";
 import { currentUserLoadInfo } from "./currentUser";
@@ -11,9 +11,9 @@ export const authAutoSignIn = () => {
   return async (dispatch) => {
     const token = await dispatch(authGetToken());
     if(token) {
-      goHome();
+      goToHomeRoot();
     } else {
-      goToAuth();
+      goToAuthRoot();
     }
   };
 };
@@ -30,7 +30,7 @@ export const authSignIn = (authData) => {
       }
 
       await dispatch(currentUserLoadInfo());
-      await goHome();
+      await goToHomeRoot();
       dispatch(uiStopLoading());
     } catch(err) {
       console.log(err);
@@ -46,6 +46,6 @@ export const authSignOut = () => {
     await dispatch(authRemoveToken());
     await dispatch(messagesRemoveNewCounts());
     await dispatch(currentUserRemove());
-    goToAuth();
+    goToAuthRoot();
   };
 };

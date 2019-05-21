@@ -5,14 +5,17 @@ export function registerScreens(store, provider) {
     'Initializing', () => require('./InitializingScreen').default,
     provider, store);
   Navigation.registerComponentWithRedux(
-    'EmailSignIn', () => require('./auth/EmailSignInScreen').default,
+    'Auth:EmailSignIn', () => require('./auth/EmailSignInScreen').default,
     provider, store);
   Navigation.registerComponentWithRedux(
-    'SignIn', () => require('./auth/SignInScreen').default,
+    'Auth:SignIn', () => require('./auth/SignInScreen').default,
     provider, store);
   Navigation.registerComponent(
-    'SignUp', () => require('./auth/SignUpScreen').default);
+    'Auth:SignUp', () => require('./auth/SignUpScreen').default);
   Navigation.registerComponentWithRedux(
     'Home', () => require('./HomeScreen').default,
+    provider, store);
+  Navigation.registerComponentWithRedux(
+    'Group', () => require('./GroupScreen').default,
     provider, store);
 }

@@ -17,7 +17,7 @@ export const goToInitialize = () => Navigation.setRoot({
   }
 });
 
-export const goToAuth = async () => {
+export const goToAuthRoot = async () => {
   const signInIcon = await Icon.getImageSource(Platform.OS === 'android' ? "md-log-in" : "ios-log-in", 30);
   const signUpIcon = await Icon.getImageSource(Platform.OS === 'android' ? "md-person-add" : "ios-person-add", 30);
 
@@ -32,7 +32,7 @@ export const goToAuth = async () => {
               children: [
                 {
                   component: {
-                    name: 'SignIn',
+                    name: 'Auth:SignIn',
                     options: {
                       topBar: {
                         visible: false
@@ -56,7 +56,7 @@ export const goToAuth = async () => {
           {
             component: {
               id: NAV_ID_SIGN_UP,
-              name: 'SignUp',
+              name: 'Auth:SignUp',
               options: {
                 bottomTab: {
                   text: 'Sign Up',
@@ -75,37 +75,40 @@ export const goToAuth = async () => {
   });
 }
 
-export const selectSignInTabOnAuth = () => Navigation.mergeOptions(
+export const goToAuthRootSignIn = () => Navigation.mergeOptions(
   NAV_ID_AUTH_TAB, {
     bottomTabs: {
       currentTabId: NAV_ID_SIGN_IN
     }
 });
 
-export const selectSignUpTabOnAuth = () => Navigation.mergeOptions(
+export const goToAuthRootSignUp = () => Navigation.mergeOptions(
   NAV_ID_AUTH_TAB, {
     bottomTabs: {
       currentTabId: NAV_ID_SIGN_UP
     }
 });
 
-export const goToEmailSignIn = (componentId) => Navigation.push(
-  componentId, {
-    component: {
-      id: NAV_ID_EMAIL_SIGN_IN,
-      name: 'EmailSignIn',
-      options: {
-        topBar: {
-          title: {
-            text: '이메일 로그인'
+export const goToAuthRootEmailSignIn = (componentId) => {
+  goToAuthRootSignIn();
+  Navigation.push(
+    componentId, {
+      component: {
+        id: NAV_ID_EMAIL_SIGN_IN,
+        name: 'Auth:EmailSignIn',
+        options: {
+          topBar: {
+            title: {
+              text: '이메일 로그인'
+            }
           }
         }
       }
     }
-  }
-);
+  );
+}
 
-export const goHome = () => Navigation.setRoot({
+export const goToHomeRoot = () => Navigation.setRoot({
   root: {
     stack: {
       id: NAV_ID_HOME,
@@ -118,4 +121,14 @@ export const goHome = () => Navigation.setRoot({
     ],
     }
   }
-})
+});
+
+export const goToHomeRootGroup = (componentId) => Navigation.showModal({
+  stack: {
+    children: [{
+      component: {
+        name: 'Group'
+      }
+    }]
+  }
+});

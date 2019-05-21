@@ -2,7 +2,6 @@ import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } f
 
 const initialState = {
   nickname: null,
-  groups: []
 };
 
 const reducer = (state = initialState, action) => {

@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { Platform, View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, Form, Item } from 'native-base';
 
-import { selectSignUpTabOnAuth } from '../../screens/routes';
 import { authSignIn } from "../../store/actions/index";
 import BasicInput from "../../components/BasicInput";
 
