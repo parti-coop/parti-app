@@ -1,5 +1,5 @@
-import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } from "./actionTypes";
-import { fetchPartiAPI } from './partiFetcher';
+import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } from "../actionTypes";
+import API from '../effects/api';
 
 export const currentUserSetInfo = (nickname) => {
   return {
@@ -24,7 +24,7 @@ export const currentUserRemove = () => {
 export const currentUserLoadInfo = () => {
   return async (dispatch) => {
     try {
-      const res = await fetchPartiAPI(dispatch, "/users/current_user");
+      const res = await API(dispatch, "/users/current_user");
       if(!res) {
         console.log("Error on currentUserLoadInfo");
         return;

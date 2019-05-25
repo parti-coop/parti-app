@@ -1,4 +1,4 @@
-import { GROUPS_SET_GROUPS } from "./actionTypes";
+import { GROUPS_SET_GROUPS } from "../actionTypes";
 
 export const groupsSetGroups = (groups) => {
   return {

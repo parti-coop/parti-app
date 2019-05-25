@@ -13,11 +13,12 @@ import { authSignOut,
   uiStartLoading,
   uiStopLoading,
   homeSelectGroup,
+  homeSelectChannel,
   homeLoadGroups } from '../store/actions/index';
 import requireAuth from '../components/requireAuth';
 import ChannelListHorizontal from '../components/ChannelListHorizontal';
-import { goToHomeRootGroup } from './routes';
-import { homeGroupsSelector } from '../store/selectors';
+import { goToHomeRootGroup, goToHomeRootChannel } from './routes';
+import { homeGroupsSelector } from '../store/selectors/home';
 
 const ACTION_SHEET_INDEX_SIGN_OUT = 0;
 const BUTTON_ID_CURRENT_USER = 'currentUserButton';
@@ -53,19 +54,20 @@ class HomeScreen extends Component {
         return;
       }
 
-      this.setState({ activeActionSheet: true });
-      ActionSheet.show(
-        {
-          options: ["로그아웃", "취소"],
-          cancelButtonIndex: 1,
-          title: "회원 상세"
-        },
-        buttonIndex => {
-          if(buttonIndex == ACTION_SHEET_INDEX_SIGN_OUT) {
-            this.props.onSignOut();
+      this.setState({ activeActionSheet: true },
+        ActionSheet.show(
+          {
+            options: ["로그아웃", "취소"],
+            cancelButtonIndex: 1,
+            title: "회원 상세"
+          },
+          buttonIndex => {
+            if(buttonIndex == ACTION_SHEET_INDEX_SIGN_OUT) {
+              this.props.onSignOut();
+            }
+            this.setState({ activeActionSheet: false });
           }
-          this.setState({ activeActionSheet: false });
-        }
+        )
       );
     }
   };
@@ -73,6 +75,11 @@ class HomeScreen extends Component {
   onGroupPressedHandler = async (group) => {
     await this.props.onSelectGroup(group);
     goToHomeRootGroup(this.props.componentId);
+  };
+
+  onChannelPressedHanlder = async (channel) => {
+    await this.props.onSelectChannel(channel);
+    goToHomeRootChannel(this.props.componentId);
   };
 
   constructor(props) {
@@ -104,7 +111,7 @@ class HomeScreen extends Component {
   render() {
     let loadCompleted = !!this.props.currentUser.nickname && this.props.newMessagesCount >= 0 && this.props.newMentionsCount >= 0;
     if(loadCompleted) {
-      this.props.onStopLoading();
+      setTimeout(() => this.props.onStopLoading(), 2000);
     }
 
     let newCountTexts = [];
@@ -162,13 +169,23 @@ class HomeScreen extends Component {
               style={{paddingLeft: 10, paddingRight: 10}}
               key={Math.random().toString(36).substring(2, 15)}>
               {{
-                "channels": <ChannelListHorizontal channels={item.channels} hasChannelsJoinable={item.hasChannelsJoinable} />,
-                "category": <View>
-                  <View style={{marginTop: 5, paddingTop: 5, paddingBottom: 5, borderBottomColor: '#eee', borderBottomWidth: 1}}>
-                    <Text style={{fontSize: 14, color: '#777'}}>{item.name}</Text>
+                "channels":
+                  <ChannelListHorizontal
+                    channels={item.channels}
+                    hasChannelsJoinable={item.hasChannelsJoinable}
+                    onPress={this.onChannelPressedHanlder}
+                  />,
+                "category":
+                  <View>
+                    <View style={{marginTop: 5, paddingTop: 5, paddingBottom: 5, borderBottomColor: '#eee', borderBottomWidth: 1}}>
+                      <Text style={{fontSize: 14, color: '#777'}}>{item.name}</Text>
+                    </View>
+                    <ChannelListHorizontal
+                      channels={item.channels}
+                      hasChannelsJoinable={item.hasChannelsJoinable}
+                      onPress={this.onChannelPressedHanlder}
+                    />
                   </View>
-                  <ChannelListHorizontal channels={item.channels} hasChannelsJoinable={item.hasChannelsJoinable} />
-                </View>
               }[item.type]}
             </View>
           )}
@@ -206,6 +223,7 @@ const mapDispatchToProps = dispatch => {
     onStartLoading: () => dispatch(uiStartLoading()),
     onStopLoading: () => dispatch(uiStopLoading()),
     onSelectGroup: (group) => dispatch(homeSelectGroup(group)),
+    onSelectChannel: (channel) => dispatch(homeSelectChannel(channel)),
     onLoadGroups: () => dispatch(homeLoadGroups()),
   };
 };

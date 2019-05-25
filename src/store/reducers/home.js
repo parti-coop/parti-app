@@ -1,7 +1,8 @@
-import { HOME_SELECT_GROUP } from "../actions/actionTypes";
+import { HOME_SELECT_GROUP, HOME_SELECT_CHANNEL } from "../actionTypes";
 
 const initialState = {
-  selectedGroup: null
+  selectedGroup: null,
+  selectedChannel: null,
 };
 
 const reducer = (state = initialState, action) => {
@@ -10,6 +11,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         selectedGroup: action.group
+      };
+    case HOME_SELECT_CHANNEL:
+      return {
+        ...state,
+        selectedChannel: action.channel
       };
     default:
       return state;

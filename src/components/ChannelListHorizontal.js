@@ -20,7 +20,8 @@ const ChannelListHorizontal = props => {
         <ChannelCard
           channel={channel}
           style={{ margin: 10 }}
-          key={channel.id} />
+          key={channel.id}
+          onPress={props.onPress} />
       ))
     }
     {

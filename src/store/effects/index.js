@@ -1,0 +1,1 @@
+export { channelLoadPostsRequested } from './channel';

@@ -75,8 +75,6 @@ class GroupScreen extends Component {
         <View style={styles.container}>
           <Text>{this.props.group.title}</Text>
         </View>
-        <View style={styles.container}>
-        </View>
       </View>
     );
   }

@@ -1,4 +1,4 @@
-import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } from "../actions/actionTypes";
+import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } from "../actionTypes";
 
 const initialState = {
   nickname: null,

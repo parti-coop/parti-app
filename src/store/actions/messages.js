@@ -1,10 +1,10 @@
-import { MESSAGES_SET_NEW_COUNTS, MESSAGES_REMOVE_NEW_COUNTS } from "./actionTypes";
-import { fetchPartiAPI } from "./partiFetcher";
+import { MESSAGES_SET_NEW_COUNTS, MESSAGES_REMOVE_NEW_COUNTS } from "../actionTypes";
+import API from '../effects/api';
 
 export const messagesGetNewCounts = () => {
   return async (dispatch, getState) => {
     try {
-      const res = await fetchPartiAPI(dispatch, "/messages/new_counts");
+      const res = await API(dispatch, "/messages/new_counts");
       if(!res) { return; }
 
       dispatch(messagesSetNewCounts(

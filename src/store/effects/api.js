@@ -2,7 +2,7 @@ import Config from 'react-native-config'
 
 import { authGetToken } from "./accessToken";
 
-export const fetchPartiAPI = async (dispatch, path, options) => {
+export default async (dispatch, path, options) => {
   const token = await dispatch(authGetToken());
   if(!token) {
     console.log(`Token Not Found : ${path}`);
@@ -37,8 +37,8 @@ export const fetchPartiAPI = async (dispatch, path, options) => {
     console.log(result);
     return result;
   } catch(err) {
-    console.log("fetchPartiAPI error")
+    console.log("API error")
     console.log(err);
-    return null;
+    throw err;
   }
 };

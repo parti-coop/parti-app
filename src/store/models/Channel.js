@@ -13,6 +13,7 @@ class Channel extends ValidatingModel {
       isMember: attr(),
       imageUrl: attr(),
       categoryId: attr(),
+      posts: many('Post'),
     }
   }
 
@@ -20,7 +21,7 @@ class Channel extends ValidatingModel {
     return 'Channel';
   }
 
-  static reducer(action, Channel, session) {
+  static reducer(action, Post, session) {
   }
 }
 

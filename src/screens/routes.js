@@ -7,7 +7,7 @@ const NAV_ID_SIGN_IN = 'signIn';
 const NAV_ID_EMAIL_SIGN_IN = 'emailSignIn';
 const NAV_ID_SIGN_UP = 'signUp';
 const NAV_ID_HOME = 'home';
-
+const NAV_ID_HOME_CHANNEL = 'homeChannel';
 
 export const goToInitialize = () => Navigation.setRoot({
   root: {
@@ -132,3 +132,12 @@ export const goToHomeRootGroup = (componentId) => Navigation.showModal({
     }]
   }
 });
+
+export const goToHomeRootChannel = (componentId) => Navigation.push(
+  componentId, {
+    component: {
+      id: NAV_ID_HOME_CHANNEL,
+      name: 'Channel'
+    }
+  }
+);

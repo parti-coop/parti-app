@@ -1,4 +1,4 @@
-import { UI_START_LOADING, UI_STOP_LOADING } from './actionTypes';
+import { UI_START_LOADING, UI_STOP_LOADING } from '../actionTypes';
 
 export const uiStartLoading = () => {
     return {

@@ -1,4 +1,4 @@
-import { MESSAGES_SET_NEW_COUNTS, MESSAGES_REMOVE_NEW_COUNTS } from "../actions/actionTypes";
+import { MESSAGES_SET_NEW_COUNTS, MESSAGES_REMOVE_NEW_COUNTS } from "../actionTypes";
 
 const initialState = {
   newMessagesCount: null,

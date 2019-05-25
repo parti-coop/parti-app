@@ -1,4 +1,4 @@
-import { AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from "../actions/actionTypes";
+import { AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from "../actionTypes";
 
 const initialState = {
   isAuthenticated: false,

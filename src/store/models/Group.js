@@ -2,7 +2,7 @@ import { PropTypes } from 'React';
 import { Model, fk, many, attr } from 'redux-orm';
 import propTypesMixin from 'redux-orm-proptypes';
 
-import { GROUPS_SET_GROUPS } from  '../actions/actionTypes';
+import { GROUPS_SET_GROUPS } from  '../actionTypes';
 
 const ValidatingModel = propTypesMixin(Model);
 
@@ -36,7 +36,7 @@ class Group extends ValidatingModel {
   static reducer(action, Group, session) {
     switch(action.type){
       case GROUPS_SET_GROUPS:
-        action.groups.map((group) => {
+        action.groups?.map((group) => {
           Group.parse(group);
         });
         break;

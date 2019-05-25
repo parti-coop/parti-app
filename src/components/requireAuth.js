@@ -30,7 +30,6 @@ export default function (ComposedComponent) {
     }
 
     render() {
-      console.log(this.props.isAuthenticated);
       return (
         <View style={{ flex: 1 }}>
           { this.props.isAuthenticated ? <ComposedComponent {...this.props} /> : null }

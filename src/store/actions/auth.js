@@ -2,7 +2,7 @@ import Config from 'react-native-config'
 
 import { goToAuthRoot, goToHomeRoot } from '../../screens/routes';
 import { uiStartLoading, uiStopLoading } from "./ui";
-import { authGetToken, authCreateToken, authClearStorage, authRemoveToken } from "./accessToken";
+import { authGetToken, authCreateToken, authClearStorage, authRemoveToken } from "../effects/accessToken";
 import { currentUserLoadInfo } from "./currentUser";
 import { messagesRemoveNewCounts } from "./messages";
 import { currentUserRemove } from "./currentUser";

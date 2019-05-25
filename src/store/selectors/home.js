@@ -1,18 +1,14 @@
-import orm from './models';
-import { createSelector } from 'reselect';
+import orm from '../models'
 import { createSelector as ormCreateSelector } from 'redux-orm';
 
-export const ormSelector = state => {
-  return state.orm
-};
+// export const getEntitiesSession = createSelector(
+//   ormSelector,
+//   entities => orm.from(entities)
+// );
 
-export const getEntitiesSession = createSelector(
-  ormSelector,
-  entities => orm.from(entities)
-);
-
-export const homeGroupsSelector = ormCreateSelector(orm,
-  ormSelector,
+export const homeGroupsSelector = ormCreateSelector(
+  orm,
+  state => { return state.orm },
   session => {
     return session.Group.filter({ isMember: true }).toModelArray().map(groupModel => {
       const groupRef = Object.assign({uncategorizedChannels: []}, groupModel.ref);
@@ -20,6 +16,10 @@ export const homeGroupsSelector = ormCreateSelector(orm,
 
       const categoryIdArray = categoryRefArray.map((categoryRef) => categoryRef.id);
       let dictChannels = groupModel.channels.filter({ isMember: true }).toRefArray().reduce((dictChannels, channelRef) => {
+        channelRef = {
+          ...channelRef,
+          group: groupRef
+        }
         const categoryId = channelRef.categoryId;
         if(!!categoryId && categoryIdArray.includes(categoryId)) {
           (dictChannels[channelRef.categoryId] = dictChannels[channelRef.categoryId] || []).push(channelRef);

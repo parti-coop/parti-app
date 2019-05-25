@@ -1,5 +1,5 @@
-import { HOME_SELECT_GROUP } from "./actionTypes";
-import { fetchPartiAPI } from './partiFetcher';
+import { HOME_SELECT_GROUP, HOME_SELECT_CHANNEL } from "../actionTypes";
+import API from '../effects/api';
 import { groupsSetGroups } from './groups';
 
 export const homeSelectGroup = (group) => {
@@ -9,10 +9,17 @@ export const homeSelectGroup = (group) => {
   };
 };
 
+export const homeSelectChannel = (channel) => {
+  return {
+    type: HOME_SELECT_CHANNEL,
+    channel: channel
+  };
+};
+
 export const homeLoadGroups = () => {
   return async (dispatch) => {
     try {
-      const res = await fetchPartiAPI(dispatch, "/home/groups");
+      const res = await API(dispatch, "/home/groups");
       if(!res) {
         console.log("Error on currentUserLoadGroups");
         return;

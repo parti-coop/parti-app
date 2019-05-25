@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import Config from 'react-native-config'
 
-import { AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from "./actionTypes";
+import { AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from "../actionTypes";
 
 const STORAGE_KEY_REFRESH_TOKEN = "auth:refreshToken";
 const STORAGE_KEY_TOKEN = "auth:token";
