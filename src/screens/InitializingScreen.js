@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { connect } from "react-redux";
 import { Navigation } from 'react-native-navigation';
 
-import { authAutoSignIn } from "../store/actions/index";
+import { authAutoSignIn } from "../store/effects";
 
 class InitializingScreen extends Component {
   static options() {

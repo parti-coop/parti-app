@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Platform, View, Text, Image, FlatList, StyleSheet } from 'react-native';
+import { Platform, View, Text, Image, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { Content, Button, Card, CardItem, Thumbnail, Left, Body, Right } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Navigation } from 'react-native-navigation';
+import HTML from 'react-native-render-html';
 
 import { channelLoadPostsRequested } from '../store/effects';
 import { channelResetError } from '../store/actions';
@@ -84,35 +85,52 @@ class ChannelScreen extends Component {
         <FlatList
           style={{ width: '100%' }}
           data={this.props.posts}
-          renderItem={({item}) => (
+          renderItem={({ item: post }) => (
             <Card style={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}>
-              <CardItem>
+              { !!post.lastStroked.text && !!post.lastStroked.at &&
+                <CardItem style={{ backgroundColor: '#eee', padding: 5 }}>
+                  <Text>{post.lastStroked.text} {post.lastStroked.at}</Text>
+                </CardItem>
+              }
+              <CardItem header>
                 <Left>
-                  <Thumbnail source={{uri: 'Image URL'}} />
+                  <Thumbnail source={{ uri: post.user.imageUrl }} />
                   <Body>
-                    <Text>{item.id}</Text>
-                    <Text note>{item.body}</Text>
+                    <Text style={{ fontWeight: 'bold' }}>{post.user.nickname} {post.key}</Text>
+                    <Text style={{ color: '#aaa' }}>{post.user.nickname}</Text>
                   </Body>
                 </Left>
+                <Right>
+                  <Icon size={15} name={Platform.select({android: "md-more", ios: "ios-more"})} />
+                </Right>
               </CardItem>
               <CardItem cardBody>
-                <Image source={{uri: 'Image URL'}} style={{height: 200, width: null, flex: 1}}/>
+                <Left>
+                  <HTML html={post.body}
+                    imagesMaxWidth={Dimensions.get('window').width}
+                    ignoredStyles={['display', 'width', 'height', 'font-family']}
+                    containerStyle={{ paddingLeft: 15, paddingRight: 15 }}
+                  />
+                </Left>
               </CardItem>
               <CardItem>
                 <Left>
                   <Button transparent>
-                    <Icon active name="thumbs-up" />
-                    <Text>12 Likes</Text>
+                    <Icon size={15} name={Platform.select({android: "md-heart", ios: "ios-heart"})} />
+                    <Text style={{ marginLeft: 5 }}>공감해요 {post.upvotesCount > 0 && post.upvotesCount}</Text>
                   </Button>
                 </Left>
                 <Body>
-                  <Button transparent>
-                    <Icon active name="chatbubbles" />
-                    <Text>4 Comments</Text>
+                  <Button transparent style={{ justifyContent: 'center' }}>
+                    <Icon size={15} name={Platform.select({android: "md-text", ios: "ios-text"})} />
+                    <Text style={{ marginLeft: 5 }}>댓글달기 {post.commentsCount > 0 && post.commentsCount}</Text>
                   </Button>
                 </Body>
                 <Right>
-                  <Text>11h ago</Text>
+                  <Button transparent>
+                    <Icon size={15} name={Platform.select({android: "md-share-alt", ios: "ios-share-alt"})} />
+                    <Text style={{ marginLeft: 5 }}>공유하기</Text>
+                  </Button>
                 </Right>
               </CardItem>
             </Card>

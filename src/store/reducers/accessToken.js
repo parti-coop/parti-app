@@ -1,4 +1,4 @@
-import { AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from "../actionTypes";
+import { ACCESS_TOKEN_SET_INFO_SUCCEEDED, ACCESS_TOKEN_CLEAR_ALL_SUCCEEDED } from "../actionTypes";
 
 const initialState = {
   isAuthenticated: false,
@@ -8,14 +8,14 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case AUTH_SET_TOKEN:
+    case ACCESS_TOKEN_SET_INFO_SUCCEEDED:
       return {
         ...state,
         isAuthenticated: !!action.token,
         token: action.token,
-        expiryTimestamp: action.expiryDate
+        expiryTimestamp: action.expiryTimestamp
       };
-    case AUTH_REMOVE_TOKEN:
+    case ACCESS_TOKEN_CLEAR_ALL_SUCCEEDED:
       return {
         ...state,
         isAuthenticated: false,

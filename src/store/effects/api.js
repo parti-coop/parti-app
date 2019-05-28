@@ -1,9 +1,9 @@
 import Config from 'react-native-config'
 
-import { authGetToken } from "./accessToken";
+import { accessTokenGetInfoRequested } from "./accessToken";
 
 export default async (dispatch, path, options) => {
-  const token = await dispatch(authGetToken());
+  const token = await dispatch(accessTokenGetInfoRequested());
   if(!token) {
     console.log(`Token Not Found : ${path}`);
     return null;

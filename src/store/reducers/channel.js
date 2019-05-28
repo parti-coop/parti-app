@@ -1,7 +1,9 @@
-import { CHANNELS_LOAD_POSTS_SUCCEEDED } from "../actionTypes";
+import { CHANNELS_LOAD_POSTS_SUCCEEDED,
+  HOME_SELECT_GROUP, HOME_SELECT_CHANNEL } from "../actionTypes";
 
 const initialState = {
   posts: [],
+  channel: null
 };
 
 const reducer = (state = initialState, action) => {
@@ -11,9 +13,21 @@ const reducer = (state = initialState, action) => {
         ...state,
         posts: [
           ...state.posts,
-          ...(action?.posts || [])
+          ...(action.posts || [])
         ],
-        error: null
+        channel: action.channel
+      };
+    case HOME_SELECT_GROUP:
+      return {
+        ...initialState,
+      };
+    case HOME_SELECT_CHANNEL:
+      if(state.channel === action.channel) {
+        return state;
+      }
+
+      return {
+        ...initialState,
       };
     default:
       return state;

@@ -2,19 +2,17 @@ import { createStore, combineReducers, compose, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { createReducer } from 'redux-orm';
 
-import authReducer from "./reducers/auth";
-import currentUserReducer from "./reducers/currentUser";
-import messagesReducer from "./reducers/messages";
-import homeReducer from "./reducers/home";
 import uiReducer from "./reducers/ui";
+import accessTokenReducer from "./reducers/accessToken";
+import currentUserReducer from "./reducers/currentUser";
+import homeReducer from "./reducers/home";
 import channelReducer from "./reducers/channel";
 import orm from './models';
 
 const rootReducer = combineReducers({
-  auth: authReducer,
-  currentUser: currentUserReducer,
   ui: uiReducer,
-  messages: messagesReducer,
+  accessToken: accessTokenReducer,
+  currentUser: currentUserReducer,
   home: homeReducer,
   channel: channelReducer,
   orm: createReducer(orm)

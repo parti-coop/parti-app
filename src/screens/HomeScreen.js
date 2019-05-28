@@ -8,15 +8,11 @@ import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import { authSignOut,
-  messagesGetNewCounts,
-  uiStartLoading,
-  uiStopLoading,
-  homeSelectGroup,
-  homeSelectChannel,
-  homeLoadGroups } from '../store/actions/index';
-import requireAuth from '../components/requireAuth';
+import { uiStartLoading, uiStopLoading, homeSelectGroup, homeSelectChannel } from '../store/actions';
+import { authSignOut, homeLoadGroupsRequested } from '../store/effects';
+import requiredCurrentUser from '../components/requiredCurrentUser';
 import ChannelListHorizontal from '../components/ChannelListHorizontal';
+import GroupSectionHeader from '../components/GroupSectionHeader';
 import { goToHomeRootGroup, goToHomeRootChannel } from './routes';
 import { homeGroupsSelector } from '../store/selectors/home';
 
@@ -62,10 +58,10 @@ class HomeScreen extends Component {
             title: "회원 상세"
           },
           buttonIndex => {
+            this.setState({ activeActionSheet: false });
             if(buttonIndex == ACTION_SHEET_INDEX_SIGN_OUT) {
               this.props.onSignOut();
             }
-            this.setState({ activeActionSheet: false });
           }
         )
       );
@@ -87,39 +83,69 @@ class HomeScreen extends Component {
 
     this.setupTopBar();
     this.navButtonListener = Navigation.events().registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
-    this.navComponentDidAppearListener = Navigation.events().registerComponentDidAppearListener(this.componentDidAppearHandler);
     this.props.onStartLoading();
     this.props.onLoadGroups();
   }
-
-  componentDidAppearHandler =  ({componentId, componentName}) => {
-    this.props.onMessagesGetNewCounts();
-  };
 
   componentWillUnmount() {
     if(this.navButtonListener) {
       this.navButtonListener.remove();
     }
     this.navButtonListener = null;
+  }
 
-    if(this.navComponentDidAppearListener) {
-      this.navComponentDidAppearListener.remove();
-    }
-    this.navComponentDidAppearListener = null;
+  renderSectionHeader = ({section: {group}}) => {
+    console.log('Section GroupID', group.id)
+    return (<GroupSectionHeader group={group} onGroupPressed={this.onGroupPressedHandler} />);
+  }
+
+  renderItem = ({item, index, section: {group}}) => {
+    return (
+      <View
+        style={styles.item}
+        key={item.key}>
+        {
+          item.type == "channels" &&
+            <ChannelListHorizontal
+              itemType={index}
+              group={group}
+              channels={item.channels}
+              hasChannelsJoinable={item.hasChannelsJoinable}
+              onPress={this.onChannelPressedHanlder}
+            />
+        }
+        {
+          item.type == "category" &&
+            <View>
+              <View style={{marginTop: 5, paddingTop: 5, paddingBottom: 5, borderBottomColor: '#eee', borderBottomWidth: 1}}>
+                <Text style={{fontSize: 14, color: '#777'}}>{item.name}</Text>
+              </View>
+              <ChannelListHorizontal
+                itemType={index}
+                group={group}
+                channels={item.channels}
+                hasChannelsJoinable={item.hasChannelsJoinable}
+                onPress={this.onChannelPressedHanlder}
+              />
+            </View>
+        }
+      </View>
+    );
   }
 
   render() {
-    let loadCompleted = !!this.props.currentUser.nickname && this.props.newMessagesCount >= 0 && this.props.newMentionsCount >= 0;
+    let loadCompleted = !!this.props.currentUser && this.props.homeGroups?.length > 0;
     if(loadCompleted) {
       setTimeout(() => this.props.onStopLoading(), 2000);
     }
 
+    console.log('this.props.homeGroups' , this.props.homeGroups);
     let newCountTexts = [];
-    if(this.props.newMessagesCount && this.props.newMessagesCount > 0) {
-      newCountTexts.push(`새 알림 ${this.props.newMessagesCount}개`);
+    if(this.props.currentUser.newMessagesCount && this.props.currentUser.newMessagesCount > 0) {
+      newCountTexts.push(`새 알림 ${this.props.currentUser.newMessagesCount}개`);
     }
-    if(this.props.newMentionsCount && this.props.newMentionsCount > 0) {
-      newCountTexts.push(`새 멘션 ${this.props.newMentionsCount}개`);
+    if(this.props.currentUser.newMentionsCount && this.props.currentUser.newMentionsCount > 0) {
+      newCountTexts.push(`새 멘션 ${this.props.currentUser.newMentionsCount}개`);
     }
 
     let subWelcome;
@@ -136,6 +162,7 @@ class HomeScreen extends Component {
       }
     }
 
+    console.log('render...');
     return (
       <Root>
         <Spinner
@@ -144,53 +171,10 @@ class HomeScreen extends Component {
           textStyle={styles.spinnerTextStyle}
         />
         <SectionList
-          ListHeaderComponent={
-            loadCompleted && <View style={{alignItems: 'center', paddingTop: 10, paddingBottom: 10}}>
-              <Text style={styles.welcome}>
-                안녕하세요,
-                {this.props.currentUser.nickname}님!
-              </Text>
-              <Text>{subWelcome}</Text>
-            </View>
-          }
-          renderSectionHeader={({section: {group}}) => (
-            <View>
-              <TouchableOpacity onPress={() => this.onGroupPressedHandler(group)}>
-              <View
-                style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#eee', paddingLeft: 10, paddingRight: 10, paddingTop: 5, paddingBottom: 5}}>
-                <Text style={{fontWeight: 'bold', paddingTop: 5, paddingBottom: 5}}>{group.title}</Text>
-                <Icon size={20} color="#999" name={Platform.select({android: "md-arrow-dropright", ios: "ios-arrow-dropright"})} />
-              </View>
-              </TouchableOpacity>
-            </View>
-          )}
-          renderItem={({item, index, section: {group}}) => (
-            <View
-              style={{paddingLeft: 10, paddingRight: 10}}
-              key={Math.random().toString(36).substring(2, 15)}>
-              {{
-                "channels":
-                  <ChannelListHorizontal
-                    channels={item.channels}
-                    hasChannelsJoinable={item.hasChannelsJoinable}
-                    onPress={this.onChannelPressedHanlder}
-                  />,
-                "category":
-                  <View>
-                    <View style={{marginTop: 5, paddingTop: 5, paddingBottom: 5, borderBottomColor: '#eee', borderBottomWidth: 1}}>
-                      <Text style={{fontSize: 14, color: '#777'}}>{item.name}</Text>
-                    </View>
-                    <ChannelListHorizontal
-                      channels={item.channels}
-                      hasChannelsJoinable={item.hasChannelsJoinable}
-                      onPress={this.onChannelPressedHanlder}
-                    />
-                  </View>
-              }[item.type]}
-            </View>
-          )}
-          sections={this.props.homeGroupsSelector}
-          keyExtractor={(item, index) => item.key}
+          initialNumToRender={10}
+          renderSectionHeader={this.renderSectionHeader}
+          renderItem={this.renderItem}
+          sections={this.props.homeGroups}
         />
       </Root>
     );
@@ -204,28 +188,29 @@ const styles = StyleSheet.create({
   spinnerTextStyle: {
     color: '#fff'
   },
+  item: {
+    paddingLeft: 10,
+    paddingRight: 10
+  }
 });
 
 const mapStateToProps = state => {
   return {
     currentUser: state.currentUser,
-    homeGroupsSelector: homeGroupsSelector(state),
-    newMessagesCount: state.messages.newMessagesCount,
-    newMentionsCount: state.messages.newMentionsCount,
+    homeGroups: homeGroupsSelector(state),
     isLoading: state.ui.isLoading
   }
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    onMessagesGetNewCounts: () => dispatch(messagesGetNewCounts()),
     onSignOut: () => dispatch(authSignOut()),
     onStartLoading: () => dispatch(uiStartLoading()),
     onStopLoading: () => dispatch(uiStopLoading()),
     onSelectGroup: (group) => dispatch(homeSelectGroup(group)),
     onSelectChannel: (channel) => dispatch(homeSelectChannel(channel)),
-    onLoadGroups: () => dispatch(homeLoadGroups()),
+    onLoadGroups: () => dispatch(homeLoadGroupsRequested()),
   };
 };
 
-export default requireAuth(connect(mapStateToProps, mapDispatchToProps)(HomeScreen));
+export default requiredCurrentUser(connect(mapStateToProps, mapDispatchToProps)(HomeScreen));

@@ -8,7 +8,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 
 import { goToAuthRootEmailSignIn, goToAuthRootSignUp } from '../../screens/routes';
 import BasicInput from "../../components/BasicInput";
-import { authSignIn } from "../../store/actions/index";
+import { authSignIn } from "../../store/effects";
 
 class SignInScreen extends Component {
   goToSignUpHandler = () => {
@@ -16,7 +16,7 @@ class SignInScreen extends Component {
   }
 
   goToEmailSignInHandler = () => {
-    goToAuthRootEmailSign(this.props.componentId);
+    goToAuthRootEmailSignIn(this.props.componentId);
   }
 
   signInHandler = (accessToken) => {

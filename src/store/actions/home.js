@@ -1,6 +1,4 @@
-import { HOME_SELECT_GROUP, HOME_SELECT_CHANNEL } from "../actionTypes";
-import API from '../effects/api';
-import { groupsSetGroups } from './groups';
+import { HOME_SELECT_GROUP, HOME_SELECT_CHANNEL, HOME_LOAD_GROUPS_RESPONDED } from "../actionTypes";
 
 export const homeSelectGroup = (group) => {
   return {
@@ -16,19 +14,10 @@ export const homeSelectChannel = (channel) => {
   };
 };
 
-export const homeLoadGroups = () => {
-  return async (dispatch) => {
-    try {
-      const res = await API(dispatch, "/home/groups");
-      if(!res) {
-        console.log("Error on currentUserLoadGroups");
-        return;
-      }
-
-      dispatch(groupsSetGroups(res));
-    } catch(err) {
-      console.log(err);
-      throw err;
-    }
+export const homeLoadGroupsResponded = (groups) => {
+  return {
+    type: HOME_LOAD_GROUPS_RESPONDED,
+    groups: groups,
   };
 };
+

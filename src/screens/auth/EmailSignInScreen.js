@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Platform, View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Button, Form, Item } from 'native-base';
 
-import { authSignIn } from "../../store/actions/index";
+import { authSignIn } from "../../store/effects";
 import BasicInput from "../../components/BasicInput";
 
 class EmailSignInScreen extends Component {

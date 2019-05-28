@@ -24,7 +24,7 @@ export const channelLoadPostsRequested = () => {
       }
 
       await dispatch(channelLoadPostsResponded(res?.posts));
-      dispatch(channelLoadPostsCompleted(res?.posts));
+      dispatch(channelLoadPostsCompleted(channel, res?.posts));
     } catch(err) {
       console.log(err);
       dispatch(uiShowError(err));
@@ -32,9 +32,9 @@ export const channelLoadPostsRequested = () => {
   };
 };
 
-const channelLoadPostsCompleted = (posts) => {
+const channelLoadPostsCompleted = (channel, posts) => {
   return (dispatch, getState) => {
     const selectedPosts = channelPostsForceSelector(getState(), posts);
-    dispatch(channelLoadPostsSucceeded(selectedPosts));
+    dispatch(channelLoadPostsSucceeded(channel, selectedPosts));
   };
 };

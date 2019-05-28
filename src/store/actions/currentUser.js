@@ -1,38 +1,14 @@
-import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } from "../actionTypes";
-import API from '../effects/api';
+import { CURRENT_USER_LOAD_INFO_RESPONDED, CURRENT_USER_CLEAR_ALL } from "../actionTypes";
 
-export const currentUserSetInfo = (nickname) => {
+export const currentUserLoadInfoResponded = (currentUser) => {
   return {
-    type: CURRENT_USER_SET_INFO,
-    nickname: nickname,
+    type: CURRENT_USER_LOAD_INFO_RESPONDED,
+    currentUser: currentUser,
   };
 };
 
-export const currentUserSetGroups = (groups) => {
+export const currentUserClearAll = () => {
   return {
-    type: CURRENT_USER_SET_GROUPS,
-    groups: groups,
-  };
-};
-
-export const currentUserRemove = () => {
-  return {
-    type: CURRENT_USER_REMOVE
-  };
-};
-
-export const currentUserLoadInfo = () => {
-  return async (dispatch) => {
-    try {
-      const res = await API(dispatch, "/users/current_user");
-      if(!res) {
-        console.log("Error on currentUserLoadInfo");
-        return;
-      }
-
-      dispatch(currentUserSetInfo(res.nickname));
-    } catch(err) {
-      console.log(err);
-    }
+    type: CURRENT_USER_CLEAR_ALL
   };
 };

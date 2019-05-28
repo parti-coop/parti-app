@@ -11,12 +11,21 @@ class Post extends ValidatingModel {
     return {
       id: attr(),
       body: attr(),
+      specificDescStripedTags: attr(),
       channelId: attr(),
       groupId: attr(),
-      created_at: attr(),
-      last_stroked_at: attr(),
-      specific_desc_striped_tags: attr(),
+      createdAt: attr(),
+      lastStroked: attr(),
       url: attr(),
+      userId: fk({
+        to: 'User',
+        as: 'user',
+        relatedName: 'posts',
+      }),
+      upvotesCount: attr(),
+      commentsCount: attr(),
+      isUpvotedByMe: attr(),
+      isUpvotable: attr(),
     }
   }
 

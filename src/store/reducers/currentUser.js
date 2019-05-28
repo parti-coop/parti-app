@@ -1,22 +1,19 @@
-import { CURRENT_USER_SET_INFO, CURRENT_USER_SET_GROUPS, CURRENT_USER_REMOVE } from "../actionTypes";
+import { CURRENT_USER_LOAD_INFO_RESPONDED, CURRENT_USER_CLEAR_ALL } from "../actionTypes";
 
 const initialState = {
   nickname: null,
+  new_messages_count: null,
+  new_mentions_count: null,
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case CURRENT_USER_SET_INFO:
+    case CURRENT_USER_LOAD_INFO_RESPONDED:
       return {
         ...state,
-        nickname: action.nickname
+        ...action.currentUser
       };
-    case CURRENT_USER_SET_GROUPS:
-      return {
-        ...state,
-        groups: action.groups
-      };
-    case CURRENT_USER_REMOVE:
+    case CURRENT_USER_CLEAR_ALL:
       return {
         ...initialState
       }
