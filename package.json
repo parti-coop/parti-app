@@ -7,12 +7,14 @@
     "android1": "react-native run-android",
     "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug && cd .. && react-native run-android",
     "ios": "react-native run-ios",
-    "test": "jest"
+    "test": "jest ./tests/**/*.spec.js"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.4.0",
     "adm-zip": "^0.4.13",
     "braces": "^3.0.2",
+    "enzyme-adapter-react-16.3": "^1.7.1",
+    "enzyme-to-json": "^3.3.5",
     "immutability-helper": "^3.0.0",
     "metro-core": "^0.54.1",
     "native-base": "^2.12.1",
@@ -38,12 +40,25 @@
   "devDependencies": {
     "@babel/core": "^7.4.4",
     "@babel/runtime": "^7.4.4",
+    "@jonny/react-native-mock": "^0.4.2",
     "babel-jest": "^24.8.0",
+    "detox": "^12.10.2",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.13.2",
+    "eslint": "^5.16.0",
     "jest": "^24.8.0",
     "metro-react-native-babel-preset": "^0.54.1",
+    "react-dom": "^16.8.6",
     "react-test-renderer": "16.8.3"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "verbose": true,
+    "setupFiles": [
+      "<rootDir>/tests/setupTests.js"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
+    ]
   }
 }
