@@ -18,18 +18,26 @@ import { homeGroupsSelector } from '../store/selectors/home';
 
 const ACTION_SHEET_INDEX_SIGN_OUT = 0;
 const BUTTON_ID_CURRENT_USER = 'currentUserButton';
+const BUTTON_ID_DRAWER_MENU = 'drawerMenuButton';
 
 class HomeScreen extends Component {
   state = {
-    activeActionSheet: false
+    activeActionSheet: false,
+    activeDrawer: false,
   };
 
   setupTopBar = async () => {
     try {
       const currentUserIcon = await Icon.getImageSource(Platform.select({android: "md-person", ios: "ios-person"}), 30);
+      const drawerMenuIcon = await Icon.getImageSource(Platform.select({android: "md-menu", ios: "ios-menu"}), 30);
       Navigation.mergeOptions(this.props.componentId, {
         topBar: {
-          leftButtons: [],
+          leftButtons: [
+            {
+              id: BUTTON_ID_DRAWER_MENU,
+              icon: drawerMenuIcon,
+            }
+          ],
           rightButtons: [
             {
               id: BUTTON_ID_CURRENT_USER,
@@ -45,7 +53,7 @@ class HomeScreen extends Component {
   };
 
   navigationButtonPressedHandler = (event) => {
-    if(event.buttonId == BUTTON_ID_CURRENT_USER) {
+    if(event.buttonId === BUTTON_ID_CURRENT_USER) {
       if(this.state.activeActionSheet) {
         return;
       }
@@ -65,6 +73,19 @@ class HomeScreen extends Component {
           }
         )
       );
+    } else if(event.buttonId === BUTTON_ID_DRAWER_MENU) {
+      this.setState(prevState => {
+        return {
+          activeDrawer: !prevState.activeDrawer
+        }
+      });
+      Navigation.mergeOptions(this.props.componentId, {
+        sideMenu: {
+          left: {
+            visible: this.state.activeDrawer,
+          }
+        }
+      })
     }
   };
 

@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, Dimensions } from 'react-native';
 import { Navigation } from 'react-native-navigation'
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -108,20 +108,52 @@ export const goToAuthRootEmailSignIn = (componentId) => {
   );
 }
 
-export const goToHomeRoot = () => Navigation.setRoot({
-  root: {
-    stack: {
-      id: NAV_ID_HOME,
-      children: [
-        {
+export const goToHomeRoot = () => {
+  /*
+   * Default drawer width is screen width - header height
+   * with a max width of 280 on mobile and 320 on tablet
+   * https://material.io/guidelines/patterns/navigation-drawer.html
+   */
+  const { height, width } = Dimensions.get('window');
+  const smallerAxisSize = Math.min(height, width);
+  const isLandscape = width > height;
+  const isTablet = smallerAxisSize >= 600;
+  const appBarHeight = Platform.OS === 'ios' ? (isLandscape ? 32 : 44) : 56;
+  const maxWidth = isTablet ? 320 : 280;
+  const drawerWidth =  Math.min(smallerAxisSize - appBarHeight, maxWidth) + 20;
+
+  return Navigation.setRoot({
+    root: {
+      sideMenu: {
+        left: {
           component: {
-            name: 'Home',
+            id: 'Drawer',
+            name: 'Drawer',
+          },
+        },
+        center: {
+          stack: {
+            id: NAV_ID_HOME,
+            children: [
+              {
+                component: {
+                  name: 'Home',
+                }
+              }
+          ],
+          }
+        },
+        options: {
+          sideMenu: {
+            left: {
+              width: drawerWidth,
+            },
           }
         }
-    ],
+      }
     }
-  }
-});
+  });
+}
 
 export const goToHomeRootGroup = (componentId) => Navigation.showModal({
   stack: {

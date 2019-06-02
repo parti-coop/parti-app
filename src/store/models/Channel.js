@@ -11,7 +11,7 @@ class Channel extends ValidatingModel {
       title: attr(),
       slug: attr(),
       isMember: attr(),
-      imageUrl: attr(),
+      logoUrl: attr(),
       categoryId: attr(),
       posts: many('Post'),
     }

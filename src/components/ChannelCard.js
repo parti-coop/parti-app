@@ -15,7 +15,7 @@ class ChannelCard extends PureComponent {
         props.onPress(props.channel)}
       }>
         <View style={[{ width: 80, height: 110 }, props.style]}>
-          <Image source={{ url: props.channel.imageUrl }} style={{ width: 80, height: 80 }} />
+          <Image source={{ url: props.channel.logoUrl }} style={{ width: 80, height: 80 }} />
           <Text numberOfLines={2} style={{ marginTop: 4, textAlign: 'center' }}>{ props.channel.title }</Text>
         </View>
       </TouchableOpacity>

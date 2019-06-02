@@ -16,6 +16,9 @@ export function registerScreens(store, provider) {
     'Home', () => require('./HomeScreen').default,
     provider, store);
   Navigation.registerComponentWithRedux(
+    'Drawer', () => require('./DrawerScreen').default,
+    provider, store);
+  Navigation.registerComponentWithRedux(
     'Group', () => require('./GroupScreen').default,
     provider, store);
   Navigation.registerComponentWithRedux(

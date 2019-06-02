@@ -10,8 +10,10 @@ class Group extends ValidatingModel {
   static get fields() {
     return {
       id: attr(),
+      key: attr(),
       title: attr(),
       slug: attr(),
+      logoUrl: attr(),
       isMember: attr(),
       categories: many('Category'),
       channels: many('Channel'),
@@ -26,6 +28,7 @@ class Group extends ValidatingModel {
     const { Category, Channel } = this.session;
     let clonedData = {
       ...data,
+      key: String(data.id),
       categories : data.categories.map(category => Category.upsert(category)),
       channels : data.channels.map(channel => Channel.upsert(channel))
     };

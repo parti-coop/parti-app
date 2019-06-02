@@ -76,7 +76,7 @@ class ChannelScreen extends Component {
         <View style={{ width: '100%', flexDirection: 'row',
         paddingTop: 50, paddingBottom: 50, paddingLeft: 10, paddingRight: 10,
         backgroundColor: "#eee" }}>
-          <Image source={{ url: this.props.channel.imageUrl }} style={{ width: 80, height: 80 }} />
+          <Image source={{ url: this.props.channel.logoUrl }} style={{ width: 80, height: 80 }} />
           <View style={{ marginLeft: 10 }}>
             <Text>{this.props.channel.group.title}</Text>
             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{this.props.channel.title}</Text>

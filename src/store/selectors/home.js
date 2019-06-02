@@ -82,5 +82,5 @@ export const homeGroupsSelector = ormCreateSelector(
       }
       return {group: group, data: data}
     });
-
-});
+  }
+);
