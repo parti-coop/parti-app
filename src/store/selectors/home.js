@@ -18,7 +18,7 @@ export const homeGroupsSelector = ormCreateSelector(
       let dictChannels = groupModel.channels.filter({ isMember: true }).toRefArray().reduce((dictChannels, channelRef) => {
         channelRef = {
           ...channelRef,
-          group: groupRef
+          group: Object.assign({}, groupModel.ref),
         }
         const categoryId = channelRef.categoryId;
         if(!!categoryId && categoryIdArray.includes(categoryId)) {

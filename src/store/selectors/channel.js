@@ -13,7 +13,7 @@ export const channelPostsForceSelector = (state, posts) => {
     const postModel = Post.withId(post.id);
     return Object.assign({
       key: postModel.id.toString(),
-      channel: Channel.withId(postModel.channelId),
+      channel: { ...Channel.withId(postModel.channelId).ref },
       user: { ...postModel.user.ref }
     }, postModel.ref);
   });

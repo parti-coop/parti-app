@@ -12,6 +12,8 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.4.0",
     "adm-zip": "^0.4.13",
+    "babel-plugin-root-import": "^6.2.0",
+    "babel-plugin-transform-remove-console": "6.9.4",
     "braces": "^3.0.2",
     "enzyme-adapter-react-16.3": "^1.7.1",
     "enzyme-to-json": "^3.3.5",
