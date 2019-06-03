@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { connect } from "react-redux";
 import { Navigation } from 'react-native-navigation';
+import { persistStore as persistStoreRaw } from 'redux-persist';
 
 import { authAutoSignIn } from "../store/effects";
 
@@ -16,8 +17,21 @@ class InitializingScreen extends Component {
     };
   }
 
+  /**
+   * Wait till our store is persisted
+   * @param {store} storeToPersist - The redux store to persist
+   * @returns {Promise} - Promise that resolves when the store is rehydrated
+   */
+  persistStore = storeToPersist => new Promise((resolve) => {
+    persistStoreRaw(storeToPersist, undefined, () => {
+      resolve();
+    });
+  });
+
   componentDidMount() {
-    this.props.onAutoSignIn();
+    this.persistStore(this.props.store).then(() => {
+      this.props.onAutoSignIn();
+    });
   }
 
   render() {

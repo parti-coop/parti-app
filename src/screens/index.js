@@ -1,6 +1,36 @@
 import { Navigation } from 'react-native-navigation';
+import Colors from '../styles/colors';
+
+const setInitialLayout = () => {
+  const defaultOptions =
+    {
+      statusBar: {
+        style: 'light',
+      },
+      layout: {
+        backgroundColor: 'white',
+        orientation: ['portrait', 'landscape'],
+      },
+      topBar: {
+        buttonColor: 'black',
+        background: {
+          color: 'white',
+        },
+      },
+      bottomTabs: {
+        elevation: 8, // BottomTabs elevation in dp
+        titleDisplayMode: 'alwaysShow',
+        backgroundColor: 'white',
+      },
+    };
+
+  Navigation.setDefaultOptions(defaultOptions);
+};
+
 
 export function registerScreens(store, provider) {
+  setInitialLayout();
+
   Navigation.registerComponentWithRedux(
     'Initializing', () => require('./InitializingScreen').default,
     provider, store);

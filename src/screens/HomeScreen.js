@@ -15,6 +15,7 @@ import ChannelListHorizontal from '../components/ChannelListHorizontal';
 import GroupSectionHeader from '../components/GroupSectionHeader';
 import { goToHomeRootGroup, goToHomeRootChannel } from './routes';
 import { homeGroupsSelector } from '../store/selectors/home';
+import { loadedIconsMap } from '../lib/AppIcons';
 
 const ACTION_SHEET_INDEX_SIGN_OUT = 0;
 const BUTTON_ID_CURRENT_USER = 'currentUserButton';
@@ -26,31 +27,24 @@ class HomeScreen extends Component {
     activeDrawer: false,
   };
 
-  setupTopBar = async () => {
-    try {
-      const currentUserIcon = await Icon.getImageSource(Platform.select({android: "md-person", ios: "ios-person"}), 30);
-      const drawerMenuIcon = await Icon.getImageSource(Platform.select({android: "md-menu", ios: "ios-menu"}), 30);
-      Navigation.mergeOptions(this.props.componentId, {
-        topBar: {
-          leftButtons: [
-            {
-              id: BUTTON_ID_DRAWER_MENU,
-              icon: drawerMenuIcon,
-            }
-          ],
-          rightButtons: [
-            {
-              id: BUTTON_ID_CURRENT_USER,
-              icon: currentUserIcon,
-            }
-          ],
-        }
-      });
-    } catch(err) {
-      console.log('현재 사용자 상세 메뉴 오류');
-      console.log(err);
-    }
-  };
+  setNavigationOptions = () => {
+    Navigation.mergeOptions(this.props.componentId, {
+      topBar: {
+        leftButtons: [
+          {
+            id: BUTTON_ID_DRAWER_MENU,
+            icon: loadedIconsMap.drawerMenu,
+          }
+        ],
+        rightButtons: [
+          {
+            id: BUTTON_ID_CURRENT_USER,
+            icon: loadedIconsMap.currentUser,
+          }
+        ],
+      }
+    });
+  }
 
   navigationButtonPressedHandler = (event) => {
     if(event.buttonId === BUTTON_ID_CURRENT_USER) {
@@ -102,7 +96,7 @@ class HomeScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.setupTopBar();
+    this.setNavigationOptions();
     this.navButtonListener = Navigation.events().registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
     this.props.onStartLoading();
     this.props.onLoadGroups();
@@ -160,7 +154,6 @@ class HomeScreen extends Component {
       setTimeout(() => this.props.onStopLoading(), 2000);
     }
 
-    console.log('this.props.homeGroups' , this.props.homeGroups);
     let newCountTexts = [];
     if(this.props.currentUser.newMessagesCount && this.props.currentUser.newMessagesCount > 0) {
       newCountTexts.push(`새 알림 ${this.props.currentUser.newMessagesCount}개`);

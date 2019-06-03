@@ -1,6 +1,7 @@
 import { Platform, Dimensions } from 'react-native';
 import { Navigation } from 'react-native-navigation'
-import Icon from 'react-native-vector-icons/Ionicons';
+
+import { loadedIconsMap } from '../lib/AppIcons';
 
 const NAV_ID_AUTH_TAB = 'authTab';
 const NAV_ID_SIGN_IN = 'signIn';
@@ -9,18 +10,18 @@ const NAV_ID_SIGN_UP = 'signUp';
 const NAV_ID_HOME = 'home';
 const NAV_ID_HOME_CHANNEL = 'homeChannel';
 
-export const goToInitialize = () => Navigation.setRoot({
+export const goToInitialize = (store) => Navigation.setRoot({
   root: {
     component: {
-      name: "Initializing"
+      name: "Initializing",
+      passProps: {
+        store: store,
+      }
     }
   }
 });
 
 export const goToAuthRoot = async () => {
-  const signInIcon = await Icon.getImageSource(Platform.OS === 'android' ? "md-log-in" : "ios-log-in", 30);
-  const signUpIcon = await Icon.getImageSource(Platform.OS === 'android' ? "md-person-add" : "ios-person-add", 30);
-
   Navigation.setRoot({
     root: {
       bottomTabs: {
@@ -44,7 +45,7 @@ export const goToAuthRoot = async () => {
               options: {
                 bottomTab: {
                   text: 'Sign In',
-                  icon: signInIcon
+                  icon: loadedIconsMap.signIn
                 },
                 bottomTabs: {
                   visible: false,
@@ -60,7 +61,7 @@ export const goToAuthRoot = async () => {
               options: {
                 bottomTab: {
                   text: 'Sign Up',
-                  icon: signUpIcon
+                  icon: loadedIconsMap.signUp
                 },
                 bottomTabs: {
                   visible: false,
@@ -148,7 +149,7 @@ export const goToHomeRoot = () => {
             left: {
               width: drawerWidth,
             },
-          }
+          },
         }
       }
     }

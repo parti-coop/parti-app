@@ -2,7 +2,7 @@ import Config from 'react-native-config'
 
 import { goToAuthRoot, goToHomeRoot } from '../../screens/routes';
 import { uiStartLoading, uiStopLoading } from "../actions/ui";
-import { accessTokenGetInfoRequested, accessTokenCreateTokenRequested, accessTokenClearAllRequested, authRemoveToken } from "./accessToken";
+import { accessTokenGetInfoRequested, accessTokenCreateTokenRequested } from "./accessToken";
 import { currentUserLoadInfoRequested } from "./currentUser";
 import { currentUserClearAll, accessTokenClearAll } from "../actions";
 
@@ -41,7 +41,7 @@ export const authSignIn = (authData) => {
 
 export const authSignOut = () => {
   return async (dispatch) => {
-    await dispatch(accessTokenClearAllRequested());
+    await dispatch(accessTokenClearAll());
     await dispatch(currentUserClearAll());
     goToAuthRoot();
   };

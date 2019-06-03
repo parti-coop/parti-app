@@ -1,11 +1,7 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import Config from 'react-native-config'
 
-import { accessTokenSetInfoSucceeded, accessTokenClearAllSucceeded } from "../actions";
-
-const STORAGE_KEY_REFRESH_TOKEN = "auth:refreshToken";
-const STORAGE_KEY_TOKEN = "auth:token";
-const STORAGE_KEY_EXPIRY_TIMESTAMP = "auth:expiryTimestamp";
+import { accessTokenSetInfoSucceeded, accessTokenClearAll } from "../actions";
 
 export const accessTokenCreateTokenRequested = (authData) => {
   let payload = {
@@ -50,8 +46,8 @@ export const accessTokenCreateTokenRequested = (authData) => {
 
       await dispatch(accessTokenStoreInfoRequested(
         parsedRes.access_token,
-        parsedRes.expires_in,
-        parsedRes.refresh_token
+        parsedRes.refresh_token,
+        parsedRes.expires_in
       ));
 
       return parsedRes.access_token;
@@ -63,9 +59,9 @@ export const accessTokenCreateTokenRequested = (authData) => {
 };
 
 export const accessTokenRefreshTokenRequested = () => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
-      let refreshToken = await AsyncStorage.getItem(STORAGE_KEY_REFRESH_TOKEN);
+      let refreshToken = getState().accessToken.refreshToken;
       if(!refreshToken) {
         console.log("RefreshToken Not Found");
         return null;
@@ -88,15 +84,15 @@ export const accessTokenRefreshTokenRequested = () => {
       );
       const parsedRes = await res.json();
       if (!parsedRes.access_token) {
-        dispatch(accessTokenClearAllRequested());
+        dispatch(accessTokenClearAll());
         console.log("RefreshToken Response Failed: ", parsedRes);
         return null;
       }
 
       await dispatch(accessTokenStoreInfoRequested(
         parsedRes.access_token,
-        parsedRes.expires_in,
-        parsedRes.refresh_token
+        parsedRes.refresh_token,
+        parsedRes.expires_in
       ));
       return parsedRes.access_token;
     } catch(err) {
@@ -117,19 +113,7 @@ export const accessTokenGetInfoRequested = () => {
     }
 
     try {
-      let tokenFromStorage = await AsyncStorage.getItem(STORAGE_KEY_TOKEN);
-      if (!tokenFromStorage) {
-        return await dispatch(accessTokenRefreshTokenRequested());
-      }
-
-      let expiryTimestampFromStorage = await AsyncStorage.getItem(STORAGE_KEY_EXPIRY_TIMESTAMP);
-      const parsedExpiryDate = new Date(parseInt(expiryTimestampFromStorage));
-      if (parsedExpiryDate > now) {
-        dispatch(accessTokenSetInfoSucceeded(tokenFromStorage, parseInt(expiryTimestampFromStorage)));
-        return tokenFromStorage;
-      } else {
-        return await dispatch(accessTokenRefreshTokenRequested());
-      }
+      return await dispatch(accessTokenRefreshTokenRequested());
     } catch(err) {
       console.log("Unknown Error: " + err);
       return null;
@@ -137,22 +121,10 @@ export const accessTokenGetInfoRequested = () => {
   }
 };
 
-export const accessTokenClearAllRequested = () => {
-  return dispatch => {
-    dispatch(accessTokenClearAllSucceeded());
-    AsyncStorage.removeItem(STORAGE_KEY_TOKEN);
-    AsyncStorage.removeItem(STORAGE_KEY_EXPIRY_TIMESTAMP);
-    return AsyncStorage.removeItem(STORAGE_KEY_REFRESH_TOKEN);
-  };
-};
-
-export const accessTokenStoreInfoRequested = (token, expiresIn, refreshToken) => {
+export const accessTokenStoreInfoRequested = (token, refreshToken, expiresIn) => {
   return dispatch => {
     const now = new Date();
     const expiryTimestamp = now.getTime() + expiresIn * 1000;
-    dispatch(accessTokenSetInfoSucceeded(token, expiryTimestamp));
-    AsyncStorage.setItem(STORAGE_KEY_TOKEN, token);
-    AsyncStorage.setItem(STORAGE_KEY_EXPIRY_TIMESTAMP, expiryTimestamp.toString());
-    AsyncStorage.setItem(STORAGE_KEY_REFRESH_TOKEN, refreshToken);
+    dispatch(accessTokenSetInfoSucceeded(token, refreshToken, expiryTimestamp));
   };
 };

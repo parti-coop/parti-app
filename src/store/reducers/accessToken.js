@@ -1,8 +1,9 @@
-import { ACCESS_TOKEN_SET_INFO_SUCCEEDED, ACCESS_TOKEN_CLEAR_ALL_SUCCEEDED } from "../actionTypes";
+import { ACCESS_TOKEN_SET_INFO_SUCCEEDED, ACCESS_TOKEN_CLEAR_ALL } from "../actionTypes";
 
 const initialState = {
   isAuthenticated: false,
   token: null,
+  refreshToken: null,
   expiryTimestamp: null
 };
 
@@ -13,14 +14,16 @@ const reducer = (state = initialState, action) => {
         ...state,
         isAuthenticated: !!action.token,
         token: action.token,
-        expiryTimestamp: action.expiryTimestamp
+        refreshToken: action.refreshToken,
+        expiryTimestamp: action.expiryTimestamp,
       };
-    case ACCESS_TOKEN_CLEAR_ALL_SUCCEEDED:
+    case ACCESS_TOKEN_CLEAR_ALL:
       return {
         ...state,
         isAuthenticated: false,
         token: null,
-        expiryTimestamp: null
+        refreshToken: null,
+        expiryTimestamp: null,
       };
     default:
       return state;

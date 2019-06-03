@@ -23,22 +23,4 @@ class ChannelCard extends PureComponent {
   }
 }
 
-// const ChannelCard = props => {
-//   console.log("render ChannelCard ", props.channel.id, props);
-//   return (
-//     <TouchableOpacity onPress={() => {
-//       props.onPress(props.channel)}
-//     }>
-//       <View style={[{ width: 80, height: 110 }, props.style]}>
-
-//         <Text numberOfLines={2} style={{ marginTop: 4, textAlign: 'center' }}>{ props.channel.title }</Text>
-//       </View>
-//     </TouchableOpacity>
-//   );
-// }
-
-// function arePropsEqual(prevProps, nextProps) {
-//   return true;
-// }
-
 export default ChannelCard;

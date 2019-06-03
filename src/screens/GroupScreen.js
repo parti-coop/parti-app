@@ -5,40 +5,24 @@ import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Navigation } from 'react-native-navigation';
 
+import { loadedIconsMap } from '../lib/AppIcons';
+
 const BUTTON_ID_CLOSE = 'closeButton';
 
 class GroupScreen extends Component {
-  static options(passProps) {
-    return {
+
+  setNavigationOptions = () => {
+    Navigation.mergeOptions(this.props.componentId, {
       topBar: {
-        drawBehind: true,
-        hideOnScroll: true,
-        animate: false,
-        background: {
-          color: 'transparent'
+        leftButtons: [{
+          id: BUTTON_ID_CLOSE,
+          icon: loadedIconsMap.close,
+        }],
+        title: {
+          text: this.props.group?.title
         }
       }
-    };
-  }
-
-  setupTopBar = async () => {
-    try {
-      const closeIcon = await Icon.getImageSource(Platform.select({android: "md-close", ios: "ios-close"}), 30);
-      Navigation.mergeOptions(this.props.componentId, {
-        topBar: {
-          leftButtons: [{
-            id: BUTTON_ID_CLOSE,
-            icon: closeIcon,
-          }],
-          title: {
-            text: this.props.group?.title
-          }
-        }
-      });
-    } catch(err) {
-      console.log('GroupScreen 메뉴 오류');
-      console.log(err);
-    }
+    });
   }
 
   navigationButtonPressedHandler = (event) => {
@@ -50,7 +34,7 @@ class GroupScreen extends Component {
   constructor(props) {
     super(props);
 
-    this.setupTopBar();
+    this.setNavigationOptions();
     this.navButtonListener = Navigation.events().registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
   }
 
