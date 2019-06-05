@@ -1,58 +1,116 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Platform, View, Text, Image, FlatList, StyleSheet, Dimensions } from 'react-native';
-import { Content, Button, Card, CardItem, Thumbnail, Left, Body, Right } from 'native-base';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { View, FlatList, Image,
+  ScrollView, SectionList,
+  TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
+import { Root, Content, Text, ActionSheet,
+  Button, Card, CardItem, Thumbnail, Left, Body, Right } from 'native-base';
 import { Navigation } from 'react-native-navigation';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Spinner from 'react-native-loading-spinner-overlay';
 import HTML from 'react-native-render-html';
 
-import { channelLoadPostsRequested } from '../store/effects';
-import { channelResetError } from '../store/actions';
+import { uiStartLoading, uiStopLoading, homeSelectGroup, homeSelectChannel } from '../store/actions';
+import { authSignOut, channelLoadMorePostsRequested } from '../store/effects';
+import requiredCurrentUser from '../components/requiredCurrentUser';
+import ChannelListHorizontal from '../components/ChannelListHorizontal';
+import GroupSectionHeader from '../components/GroupSectionHeader';
+import { goToHomeRootGroup, goToHomeRootChannel, NAV_ID_HOME_CONTAINER } from './routes';
+import { homeGroupsSelector } from '../store/selectors/home';
+import { loadedIconsMap } from '../lib/AppIcons';
+import commonStyles from '../styles/common';
 
+const ACTION_SHEET_INDEX_SIGN_OUT = 0;
+const BUTTON_ID_CURRENT_USER = 'currentUserButton';
+const BUTTON_ID_DRAWER_MENU = 'drawerMenuButton';
 
 class ChannelScreen extends Component {
-  static options(passProps) {
-    return {
-      topBar: {
-        drawBehind: true,
-        hideOnScroll: true,
-        animate: false
-      }
-    };
-  }
+  state = {
+    activeActionSheet: false,
+    currentGroup: null,
+    currentChannel: null,
+  };
 
-  setupTopBar = async () => {
-    try {
-      Navigation.mergeOptions(this.props.componentId, {
-        topBar: {
-          title: {
-            text: this.props.channel?.title
+  setNavigationOptions = () => {
+    Navigation.mergeOptions(this.props.componentId, {
+      topBar: {
+        title: {
+          text: this.props.selectedChannel?.title
+        },
+        leftButtons: [
+          {
+            id: BUTTON_ID_DRAWER_MENU,
+            icon: loadedIconsMap.drawerMenu,
           }
-        }
-      });
-    } catch(err) {
-      console.log('ChannelScreen 메뉴 오류');
-      console.log(err);
-    }
+        ],
+        rightButtons: [
+          {
+            id: BUTTON_ID_CURRENT_USER,
+            icon: loadedIconsMap.currentUser,
+          }
+        ],
+      }
+    });
   }
 
   navigationButtonPressedHandler = (event) => {
+    if(event.buttonId === BUTTON_ID_CURRENT_USER) {
+      if(this.state.activeActionSheet) {
+        return;
+      }
+
+      this.setState({ activeActionSheet: true },
+        ActionSheet.show(
+          {
+            options: ["로그아웃", "취소"],
+            cancelButtonIndex: 1,
+            title: "회원 상세"
+          },
+          buttonIndex => {
+            this.setState({ activeActionSheet: false });
+            if(buttonIndex == ACTION_SHEET_INDEX_SIGN_OUT) {
+              this.props.onSignOut();
+            }
+          }
+        )
+      );
+    } else if(event.buttonId === BUTTON_ID_DRAWER_MENU) {
+      Navigation.mergeOptions(NAV_ID_HOME_CONTAINER, {
+        sideMenu: {
+          left: {
+            visible: !this.props.homeActiveDrawer,
+          }
+        }
+      });
+    }
   };
+
+  // onGroupPressedHandler = async (group) => {
+  //   await this.props.onSelectGroup(group);
+  //   goToHomeRootChannel();
+  // };
+
+  // onChannelPressedHanlder = async (group, channel) => {
+  //   await this.props.onSelectChannel(group, channel);
+  //   goToHomeRootChannel();
+  // };
 
   constructor(props) {
     super(props);
 
-    if(this.props.channel) {
-      this.props.onLoadPosts(this.props.channel);
-    }
-    this.setupTopBar();
+    this.setNavigationOptions();
     this.navButtonListener = Navigation.events().registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
+
+    if(this.props.selectedChannel && this.props.posts.length <= 0) {
+      this.props.onLoadMorePosts(this.props.selectedChannel);
+    }
   }
 
-  componentDidUpdate (prevProps) {
-    if (!prevProps.error && this.props.error) {
-      // show the alert
-    }
+  componentDidMount() {
+    this.setState({
+      currentGroup: this.props.selectedGroup,
+      currentChannel: this.props.selectedChannel,
+    });
   }
 
   componentWillUnmount() {
@@ -62,12 +120,85 @@ class ChannelScreen extends Component {
     this.navButtonListener = null;
   }
 
+  // renderSectionHeader = ({section: {group}}) => {
+  //   console.log('Section GroupID', group.id)
+  //   return (<GroupSectionHeader group={group} onGroupPressed={this.onGroupPressedHandler} />);
+  // }
+
+  // renderItem = ({item, index, section: {group}}) => {
+  //   return (
+  //     <View
+  //       style={styles.item}
+  //       key={item.key}>
+  //       {
+  //         item.type == "channels" &&
+  //           <ChannelListHorizontal
+  //             itemType={index}
+  //             group={group}
+  //             channels={item.channels}
+  //             hasChannelsJoinable={item.hasChannelsJoinable}
+  //             onPress={this.onChannelPressedHanlder}
+  //           />
+  //       }
+  //       {
+  //         item.type == "category" &&
+  //           <View>
+  //             <View style={{marginTop: 5, paddingTop: 5, paddingBottom: 5, borderBottomColor: '#eee', borderBottomWidth: 1}}>
+  //               <Text style={{fontSize: 14, color: '#777'}}>{item.name}</Text>
+  //             </View>
+  //             <ChannelListHorizontal
+  //               itemType={index}
+  //               group={group}
+  //               channels={item.channels}
+  //               hasChannelsJoinable={item.hasChannelsJoinable}
+  //               onPress={this.onChannelPressedHanlder}
+  //             />
+  //           </View>
+  //       }
+  //     </View>
+  //   );
+  // }
+
   render() {
-    if(!this.props.channel) {
+    if(!this.state.currentChannel) {
+        let newCountTexts = [];
+        if(this.props.currentUser.newMessagesCount && this.props.currentUser.newMessagesCount > 0) {
+          newCountTexts.push(`새 알림 ${this.props.currentUser.newMessagesCount}개`);
+        }
+        if(this.props.currentUser.newMentionsCount && this.props.currentUser.newMentionsCount > 0) {
+          newCountTexts.push(`새 멘션 ${this.props.currentUser.newMentionsCount}개`);
+        }
+
+        let subWelcome;
+        if(newCountTexts.length > 0) {
+          subWelcome = `${newCountTexts.join(", ")}가 있습니다.`
+        } else {
+          const hours = new Date().getHours();
+          const isDayTime = hours > 3 && hours < 15;
+
+          if(isDayTime) {
+            subWelcome = "멋진 하루 보내세요!";
+          } else {
+            subWelcome = "오늘 하루 어떻게 보내셨나요?";
+          }
+        }
+
+      /*
+      <SectionList
+            initialNumToRender={10}
+            renderSectionHeader={this.renderSectionHeader}
+            renderItem={this.renderItem}
+            sections={this.props.homeGroups}
+          />
+       */
       return (
-        <View style={styles.container}>
-          <Text>선택된 채널이 없습니다</Text>
-        </View>
+        <Root>
+          <View style={commonStyles.flexCenterContainer}>
+            <Text>어서오세요, {this.props.currentUser.nickname}님!</Text>
+            <Text>{subWelcome}</Text>
+            <Text># 오른쪽 상단의 햄버거를 눌러 그룹과 채널을 선택해 주세요.</Text>
+          </View>
+        </Root>
       );
     }
 
@@ -76,10 +207,9 @@ class ChannelScreen extends Component {
         <View style={{ width: '100%', flexDirection: 'row',
         paddingTop: 50, paddingBottom: 50, paddingLeft: 10, paddingRight: 10,
         backgroundColor: "#eee" }}>
-          <Image source={{ url: this.props.channel.logoUrl }} style={{ width: 80, height: 80 }} />
+          <Image source={{ url: this.state.currentChannel.logoUrl }} style={{ width: 80, height: 80 }} />
           <View style={{ marginLeft: 10 }}>
-            <Text>{this.props.channel.group.title}</Text>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{this.props.channel.title}</Text>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{this.state.currentChannel.title}</Text>
           </View>
         </View>
         <FlatList
@@ -142,26 +272,37 @@ class ChannelScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start'
+  welcomContainer: {
+    alignItems: 'center',
+  },
+  // spinnerTextStyle: {
+  //   color: '#fff'
+  // },
+  item: {
+    paddingLeft: 10,
+    paddingRight: 10
   }
 });
 
 const mapStateToProps = state => {
   return {
-    channel: state.home.selectedChannel,
     posts: state.channel.posts,
-    error: state.ui.error,
+    currentUser: state.currentUser,
+    selectedGroup: state.home.selectedGroup,
+    selectedChannel: state.home.selectedChannel,
+    homeActiveDrawer: state.ui.homeActiveDrawer,
+    //homeGroups: homeGroupsSelector(state),
+    // isLoading: state.ui.isLoading
   }
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    onLoadPosts: (channel) => dispatch(channelLoadPostsRequested(channel)),
-    onResetError: (channel) => dispatch(channelResetError())
-  }
+    onSignOut: () => dispatch(authSignOut()),
+    onSelectGroup: (group) => dispatch(homeSelectGroup(group)),
+    onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
+    onLoadMorePosts: (channel) => dispatch(channelLoadMorePostsRequested(channel)),
+  };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChannelScreen);
+export default requiredCurrentUser(connect(mapStateToProps, mapDispatchToProps)(ChannelScreen));

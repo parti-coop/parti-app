@@ -34,7 +34,15 @@ class Post extends ValidatingModel {
   }
 
   static parse(data) {
-    return this.upsert(data);
+
+    return this.upsert({
+      ...data,
+      createdAt: Date.parse(data.createdAt),
+      lastStroked: {
+        ... data.lastStroked,
+        at: Date.parse(data.lastStroked.at)
+      }
+    });
   }
 
   static reducer(action, Post, session) {

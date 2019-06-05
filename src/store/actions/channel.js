@@ -1,10 +1,11 @@
 import { CHANNELS_LOAD_POSTS_SUCCEEDED, CHANNELS_LOAD_POSTS_RESPONDED } from "../actionTypes";
 
-export const channelLoadPostsSucceeded = (channel, posts) => {
+export const channelLoadPostsSucceeded = (channel, posts, afterDateTime) => {
   return {
     type: CHANNELS_LOAD_POSTS_SUCCEEDED,
     channel: channel,
     posts: posts,
+    afterDateTime: afterDateTime,
   };
 };
 

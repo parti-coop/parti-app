@@ -7,8 +7,8 @@ const NAV_ID_AUTH_TAB = 'authTab';
 const NAV_ID_SIGN_IN = 'signIn';
 const NAV_ID_EMAIL_SIGN_IN = 'emailSignIn';
 const NAV_ID_SIGN_UP = 'signUp';
-const NAV_ID_HOME = 'home';
 const NAV_ID_HOME_CHANNEL = 'homeChannel';
+export const NAV_ID_HOME_CONTAINER = 'homeContainer';
 
 export const goToInitialize = (store) => Navigation.setRoot({
   root: {
@@ -126,6 +126,7 @@ export const goToHomeRoot = () => {
   return Navigation.setRoot({
     root: {
       sideMenu: {
+        id: NAV_ID_HOME_CONTAINER,
         left: {
           component: {
             id: 'Drawer',
@@ -134,11 +135,11 @@ export const goToHomeRoot = () => {
         },
         center: {
           stack: {
-            id: NAV_ID_HOME,
+            id: NAV_ID_HOME_CHANNEL,
             children: [
               {
                 component: {
-                  name: 'Home',
+                  name: 'Channel',
                 }
               }
           ],
@@ -166,11 +167,17 @@ export const goToHomeRootGroup = (componentId) => Navigation.showModal({
   }
 });
 
-export const goToHomeRootChannel = (componentId) => Navigation.push(
-  componentId, {
+export const goToHomeRootChannel = (leftMenu = false) => Navigation.setStackRoot(
+  NAV_ID_HOME_CHANNEL, {
     component: {
-      id: NAV_ID_HOME_CHANNEL,
-      name: 'Channel'
+      name: 'Channel',
+      options: {
+        sideMenu: {
+          left: {
+            visible: leftMenu
+          }
+        }
+      }
     }
   }
 );

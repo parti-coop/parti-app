@@ -13,6 +13,7 @@ class Channel extends ValidatingModel {
       isMember: attr(),
       logoUrl: attr(),
       categoryId: attr(),
+      groupId: attr(),
       posts: many('Post'),
     }
   }

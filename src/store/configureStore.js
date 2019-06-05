@@ -31,7 +31,7 @@ const logger = createLogger({
 });
 
 const persistConfig = {
-  key: 'root1',
+  key: 'root3',
   storage: AsyncStorage,
   whitelist: ['accessToken', 'home', 'currentUser', 'channel', 'orm'],
   timeout: null,

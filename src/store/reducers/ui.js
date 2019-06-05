@@ -1,7 +1,9 @@
-import { UI_START_LOADING, UI_STOP_LOADING } from "../actionTypes";
+import { UI_START_LOADING, UI_STOP_LOADING,
+  UI_HOME_ACTIVE_DRAWER, UI_HOME_INACTIVE_DRAWER } from "../actionTypes";
 
 const initialState = {
   isLoading: false,
+  homeActiveDrawer: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -15,6 +17,16 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false
+      };
+    case UI_HOME_ACTIVE_DRAWER:
+      return {
+        ...state,
+        homeActiveDrawer: true
+      };
+    case UI_HOME_INACTIVE_DRAWER:
+      return {
+        ...state,
+        homeActiveDrawer: false
       };
     default:
       return state;

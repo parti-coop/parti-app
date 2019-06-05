@@ -10,3 +10,19 @@ export const drawerGroupsSelector = ormCreateSelector(
     });
   }
 );
+
+export const drawerChannelsSelector = ormCreateSelector(
+  orm,
+  state => { return state.orm },
+  state => { return state.home.selectedGroup?.id },
+  (session, groupId) => {
+    console.log("groupId", groupId);
+    if(groupId) {
+      return session.Channel.filter({ groupId: groupId }).toRefArray().map(channelRef => {
+        return {...channelRef};
+      });
+    } else {
+      return [];
+    }
+  }
+);

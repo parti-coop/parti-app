@@ -4,16 +4,67 @@ import { View, SafeAreaView, Text, FlatList,
 import { Thumbnail } from 'native-base';
 import { connect } from 'react-redux';
 import { getInset } from 'react-native-safe-area-view';
+import { Navigation } from 'react-native-navigation';
 
-import { drawerGroupsSelector } from '../store/selectors/drawer';
+import { homeLoadGroupsRequested } from '../store/effects';
+import { goToHomeRootGroup, goToHomeRootChannel } from './routes';
+import { drawerGroupsSelector, drawerChannelsSelector } from '../store/selectors/drawer';
+import { homeSelectGroup, homeSelectChannel,
+  uiHomeActiveDrawer, uiHomeInactiveDrawer } from '../store/actions';
+import { NAV_ID_HOME_CONTAINER } from './routes';
 
 class DrawerScreen extends Component {
-  renderGroups = ({ item: group }) => (
-    <TouchableOpacity style={styles.groupTouchable}>
+  onGroupPressedHandler = async (group) => {
+    await this.props.onSelectGroup(group);
+    goToHomeRootChannel(true);
+  };
+
+  onChannelPressedHandler = async (channel) => {
+    await this.props.onSelectChannel(this.props.selectedGroup, channel);
+    goToHomeRootChannel();
+  };
+
+  renderGroup = ({ item: group }) => (
+    <TouchableOpacity style={styles.groupTouchable} onPress={() => this.onGroupPressedHandler(group)}>
       <Thumbnail source={{ uri: group.logoUrl }} style={styles.groupThumnail} />
     </TouchableOpacity>
   )
 
+  renderChannel = ({ item: channel }) => (
+    <TouchableOpacity style={styles.channelTouchable} onPress={() => this.onChannelPressedHandler(channel)}>
+      <Text>#{channel.title}</Text>
+    </TouchableOpacity>
+  )
+
+  constructor(props) {
+    super(props);
+
+    this.props.onLoadGroups();
+
+    this.componentDidAppearListener = Navigation.events().registerComponentDidAppearListener(({ componentId }) => {
+      if (componentId === this.props.componentId) {
+        this.props.onHomeActiveDrawer();
+      }
+    });
+
+    this.componentDidDisappearListener = Navigation.events().registerComponentDidDisappearListener(({ componentId }) => {
+      if (componentId === this.props.componentId) {
+        this.props.onHomeInactiveDrawer();
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    if(this.componentDidAppearListener) {
+      this.componentDidAppearListener.remove();
+    }
+    this.componentDidAppearListener = null;
+
+    if(this.componentDidDisappearListener) {
+      this.componentDidDisappearListener.remove();
+    }
+    this.componentDidDisappearListener = null;
+  }
 
   render() {
     const { width, height } = Dimensions.get('window');
@@ -26,10 +77,15 @@ class DrawerScreen extends Component {
           <FlatList
             style={styles.groups}
             data={this.props.groups}
-            renderItem={this.renderGroups}
+            renderItem={this.renderGroup}
           />
         </View>
         <View style={[styles.channelsContainer, { paddingTop: topPadding }]}>
+          <FlatList
+            style={styles.channels}
+            data={this.props.channels}
+            renderItem={this.renderChannel}
+          />
         </View>
       </View>
     );
@@ -62,15 +118,30 @@ const styles = StyleSheet.create({
   channelsContainer: {
     flex: 1,
     backgroundColor: '#271446',
-  }
+  },
+  channels: {
+    width: '100%',
+  },
 });
 
 const mapStateToProps = state => {
   return {
     groups: drawerGroupsSelector(state),
+    channels: drawerChannelsSelector(state),
+    currentUser: state.currentUser,
+    selectedGroup: state.home.selectedGroup,
+    selectedChannel: state.home.selectedChannel,
   }
 };
 
-const mapDispatchToProps = null;
+const mapDispatchToProps = dispatch => {
+  return {
+    onLoadGroups: () => dispatch(homeLoadGroupsRequested()),
+    onSelectGroup: (group) => dispatch(homeSelectGroup(group)),
+    onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
+    onHomeActiveDrawer: () => dispatch(uiHomeActiveDrawer()),
+    onHomeInactiveDrawer: () => dispatch(uiHomeInactiveDrawer()),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(DrawerScreen);

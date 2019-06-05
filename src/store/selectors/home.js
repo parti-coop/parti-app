@@ -42,7 +42,6 @@ export const homeGroupsSelector = ormCreateSelector(
 
       return groupRef;
     }).map((group) => {
-      // HomeScreen SectionList
       let data;
       if(group.categories?.length < 0)
         data= [{

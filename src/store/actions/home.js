@@ -7,9 +7,10 @@ export const homeSelectGroup = (group) => {
   };
 };
 
-export const homeSelectChannel = (channel) => {
+export const homeSelectChannel = (group, channel) => {
   return {
     type: HOME_SELECT_CHANNEL,
+    group: group,
     channel: channel
   };
 };

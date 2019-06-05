@@ -43,15 +43,12 @@ export function registerScreens(store, provider) {
   Navigation.registerComponent(
     'Auth:SignUp', () => require('./auth/SignUpScreen').default);
   Navigation.registerComponentWithRedux(
-    'Home', () => require('./HomeScreen').default,
+    'Channel', () => require('./ChannelScreen').default,
     provider, store);
   Navigation.registerComponentWithRedux(
     'Drawer', () => require('./DrawerScreen').default,
     provider, store);
   Navigation.registerComponentWithRedux(
     'Group', () => require('./GroupScreen').default,
-    provider, store);
-  Navigation.registerComponentWithRedux(
-    'Channel', () => require('./ChannelScreen').default,
     provider, store);
 }

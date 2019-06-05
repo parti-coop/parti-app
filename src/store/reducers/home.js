@@ -10,11 +10,13 @@ const reducer = (state = initialState, action) => {
     case HOME_SELECT_GROUP:
       return {
         ...state,
-        selectedGroup: action.group
+        selectedGroup: action.group,
+        selectedChannel: null,
       };
     case HOME_SELECT_CHANNEL:
       return {
         ...state,
+        selectedGroup: action.group,
         selectedChannel: action.channel
       };
     default:

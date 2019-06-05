@@ -19,6 +19,7 @@
     "enzyme-to-json": "^3.3.5",
     "immutability-helper": "^3.0.0",
     "metro-core": "^0.54.1",
+    "moment": "2.24.0",
     "native-base": "^2.12.1",
     "plist": "^3.0.1",
     "query-string": "^6.5.0",
@@ -39,7 +40,6 @@
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "underscore": "^1.9.1",
     "xcode": "^2.0.0"
   },
   "devDependencies": {

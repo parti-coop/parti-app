@@ -1,19 +1,23 @@
 import queryString from 'query-string';
+import moment from 'moment';
 
 import API from './api';
 import { channelLoadPostsResponded, channelLoadPostsSucceeded } from '../actions';
 import { uiShowError } from './ui';
 import { channelPostsForceSelector } from "../selectors/channel";
 
-export const channelLoadPostsRequested = () => {
+export const channelLoadMorePostsRequested = (channel) => {
   return async (dispatch, getState) => {
     try {
-      const channel = getState().home.selectedChannel;
+      let afterDateTime = null;
 
-      let params = { channel_id: channel?.id };
-      const lastPost = channel?.lastPost;
-      if(lastPost) {
-        params['last_post_id'] = lastPost.id;
+      let params = { channel_id: channel.id };
+      if(channel.id == getState().channel.selectedChannel?.id) {
+        const [lastPost] = getState().channel.posts.slice(-1);
+        afterDateTime = lastPost?.lastStroked?.at
+        if(!!afterDateTime) {
+          params['before_date_time'] = moment(afterDateTime).format('YYYY-MM-DDTHH:mm:ssZ');
+        }
       }
 
       const res = await API(dispatch, `/posts?${queryString.stringify(params)}`);
@@ -23,18 +27,15 @@ export const channelLoadPostsRequested = () => {
         return;
       }
 
-      await dispatch(channelLoadPostsResponded(res?.posts));
-      dispatch(channelLoadPostsCompleted(channel, res?.posts));
+      let selectedPosts = [];
+      if(res.posts.length > 0) {
+        await dispatch(channelLoadPostsResponded(res.posts));
+        selectedPosts = channelPostsForceSelector(getState(), res.posts.map((post) => post.id));
+      }
+      dispatch(channelLoadPostsSucceeded(channel, selectedPosts, afterDateTime));
     } catch(err) {
       console.log(err);
       dispatch(uiShowError(err));
     }
-  };
-};
-
-const channelLoadPostsCompleted = (channel, posts) => {
-  return (dispatch, getState) => {
-    const selectedPosts = channelPostsForceSelector(getState(), posts);
-    dispatch(channelLoadPostsSucceeded(channel, selectedPosts));
   };
 };
