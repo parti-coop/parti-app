@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, SafeAreaView, Text, FlatList,
+import { View, Text, FlatList,
   TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { connect } from 'react-redux';
@@ -11,7 +11,6 @@ import { goToHomeRootGroup, goToHomeRootChannel } from './routes';
 import { drawerGroupsSelector, drawerChannelsSelector } from '../store/selectors/drawer';
 import { homeSelectGroup, homeSelectChannel,
   uiHomeActiveDrawer, uiHomeInactiveDrawer } from '../store/actions';
-import { NAV_ID_HOME_CONTAINER } from './routes';
 
 class DrawerScreen extends Component {
   onGroupPressedHandler = async (group) => {
@@ -28,13 +27,16 @@ class DrawerScreen extends Component {
     <TouchableOpacity style={styles.groupTouchable} onPress={() => this.onGroupPressedHandler(group)}>
       <Thumbnail source={{ uri: group.logoUrl }} style={styles.groupThumnail} />
     </TouchableOpacity>
-  )
+  );
 
-  renderChannel = ({ item: channel }) => (
-    <TouchableOpacity style={styles.channelTouchable} onPress={() => this.onChannelPressedHandler(channel)}>
-      <Text>#{channel.title}</Text>
-    </TouchableOpacity>
-  )
+  renderChannel = ({ item: channel }) => {
+    const selected = (this.props.selectedChannel?.id === channel?.id);
+    return (
+      <TouchableOpacity style={[styles.channelTouchable, (selected && styles.selectedChannelTouchable)]} onPress={() => this.onChannelPressedHandler(channel)}>
+        <Text style={[styles.channelText, (selected && styles.selectedChannelText)]}>#{channel.title}</Text>
+      </TouchableOpacity>
+    );
+  }
 
   constructor(props) {
     super(props);
@@ -121,6 +123,21 @@ const styles = StyleSheet.create({
   },
   channels: {
     width: '100%',
+  },
+  channelTouchable: {
+    width: '100%',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+  },
+  selectedChannelTouchable: {
+    backgroundColor: '#0052cd',
+  },
+  channelText: {
+    color: '#eee',
+  },
+  selectedChannelText: {
+    color: 'white',
   },
 });
 

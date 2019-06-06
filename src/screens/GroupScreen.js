@@ -26,7 +26,7 @@ class GroupScreen extends Component {
   }
 
   navigationButtonPressedHandler = (event) => {
-    if(event.buttonId == BUTTON_ID_CLOSE) {
+    if(event.buttonId === BUTTON_ID_CLOSE) {
       Navigation.dismissModal(this.props.componentId);
     }
   };

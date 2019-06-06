@@ -10,7 +10,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Spinner from 'react-native-loading-spinner-overlay';
 import HTML from 'react-native-render-html';
 
-import { uiStartLoading, uiStopLoading, homeSelectGroup, homeSelectChannel } from '../store/actions';
+import { uiStartLoading, uiStopLoading,
+  homeSelectGroup, homeSelectChannel,
+  channelClearAll } from '../store/actions';
 import { authSignOut, channelLoadMorePostsRequested } from '../store/effects';
 import requiredCurrentUser from '../components/requiredCurrentUser';
 import ChannelListHorizontal from '../components/ChannelListHorizontal';
@@ -27,7 +29,6 @@ const BUTTON_ID_DRAWER_MENU = 'drawerMenuButton';
 class ChannelScreen extends Component {
   state = {
     activeActionSheet: false,
-    currentGroup: null,
     currentChannel: null,
   };
 
@@ -68,7 +69,7 @@ class ChannelScreen extends Component {
           },
           buttonIndex => {
             this.setState({ activeActionSheet: false });
-            if(buttonIndex == ACTION_SHEET_INDEX_SIGN_OUT) {
+            if(buttonIndex === ACTION_SHEET_INDEX_SIGN_OUT) {
               this.props.onSignOut();
             }
           }
@@ -101,14 +102,14 @@ class ChannelScreen extends Component {
     this.setNavigationOptions();
     this.navButtonListener = Navigation.events().registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
 
-    if(this.props.selectedChannel && this.props.posts.length <= 0) {
+    if(!!this.props.selectedChannel) {
+      this.props.onClearAll();
       this.props.onLoadMorePosts(this.props.selectedChannel);
     }
   }
 
   componentDidMount() {
     this.setState({
-      currentGroup: this.props.selectedGroup,
       currentChannel: this.props.selectedChannel,
     });
   }
@@ -196,7 +197,8 @@ class ChannelScreen extends Component {
           <View style={commonStyles.flexCenterContainer}>
             <Text>어서오세요, {this.props.currentUser.nickname}님!</Text>
             <Text>{subWelcome}</Text>
-            <Text># 오른쪽 상단의 햄버거를 눌러 그룹과 채널을 선택해 주세요.</Text>
+            <Text>오른쪽 상단의 햄버거를 눌러</Text>
+            <Text>그룹과 채널을 선택해 주세요.</Text>
           </View>
         </Root>
       );
@@ -234,15 +236,17 @@ class ChannelScreen extends Component {
                   <Icon size={15} name={Platform.select({android: "md-more", ios: "ios-more"})} />
                 </Right>
               </CardItem>
-              <CardItem cardBody>
-                <Left>
-                  <HTML html={post.body}
-                    imagesMaxWidth={Dimensions.get('window').width}
-                    ignoredStyles={['display', 'width', 'height', 'font-family']}
-                    containerStyle={{ paddingLeft: 15, paddingRight: 15 }}
-                  />
-                </Left>
-              </CardItem>
+              { !!post.body && post.body.length > 0 &&
+                <CardItem cardBody>
+                  <Left>
+                    <HTML html={post.body}
+                      imagesMaxWidth={Dimensions.get('window').width}
+                      ignoredStyles={['display', 'width', 'height', 'font-family']}
+                      containerStyle={{ paddingLeft: 15, paddingRight: 15 }}
+                    />
+                  </Left>
+                </CardItem>
+              }
               <CardItem>
                 <Left>
                   <Button transparent>
@@ -299,8 +303,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onSignOut: () => dispatch(authSignOut()),
-    onSelectGroup: (group) => dispatch(homeSelectGroup(group)),
-    onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
+    // onSelectGroup: (group) => dispatch(homeSelectGroup(group)),
+    // onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
+    onClearAll: () => dispatch(channelClearAll()),
     onLoadMorePosts: (channel) => dispatch(channelLoadMorePostsRequested(channel)),
   };
 };

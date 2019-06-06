@@ -1,15 +1,15 @@
-import { CHANNELS_LOAD_POSTS_SUCCEEDED } from "../actionTypes";
+import { CHANNELS_LOAD_POSTS_SUCCEEDED, CHANNELS_CLEAR_ALL } from "../actionTypes";
 
 const initialState = {
   posts: [],
-  selectedChannel: null
+  currentChannel: null
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case CHANNELS_LOAD_POSTS_SUCCEEDED:
       posts = [];
-      if(!!action.afterDateTime && state.selectedChannel.id == action.channel.id) {
+      if(!!action.afterDateTime && state.currentChannel.id === action.channel.id) {
         for (index = 0; index < state.posts.length; index++) {
           if (state.posts[index]?.lastStroked?.at?.getTime() < action.afterDateTime.getTime()) {
             break;
@@ -26,8 +26,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         posts: posts,
-        selectedChannel: action.channel
+        currentChannel: action.channel
       };
+    case CHANNELS_CLEAR_ALL:
+      return {
+        ...initialState
+      }
     default:
       return state;
   }

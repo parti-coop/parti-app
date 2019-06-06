@@ -12,7 +12,7 @@ export const channelLoadMorePostsRequested = (channel) => {
       let afterDateTime = null;
 
       let params = { channel_id: channel.id };
-      if(channel.id == getState().channel.selectedChannel?.id) {
+      if(channel.id === getState().channel.selectedChannel?.id) {
         const [lastPost] = getState().channel.posts.slice(-1);
         afterDateTime = lastPost?.lastStroked?.at
         if(!!afterDateTime) {

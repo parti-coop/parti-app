@@ -6,7 +6,7 @@ export const drawerGroupsSelector = ormCreateSelector(
   state => { return state.orm },
   session => {
     return session.Group.filter({ isMember: true }).toRefArray().map(groupRef => {
-      return Object.assign({}, groupRef);
+      return Object.assign({ key: groupRef.id.toString() }, groupRef);
     });
   }
 );
@@ -19,7 +19,7 @@ export const drawerChannelsSelector = ormCreateSelector(
     console.log("groupId", groupId);
     if(groupId) {
       return session.Channel.filter({ groupId: groupId }).toRefArray().map(channelRef => {
-        return {...channelRef};
+        return {...channelRef, key: channelRef.id.toString()};
       });
     } else {
       return [];
