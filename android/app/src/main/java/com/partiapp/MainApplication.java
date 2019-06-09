@@ -3,6 +3,7 @@ package com.partiapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import iyegoroff.RNColorMatrixImageFilters.ColorMatrixImageFiltersPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
@@ -49,7 +50,8 @@ public class MainApplication extends NavigationApplication {
       new VectorIconsPackage(),
       new AsyncStoragePackage(),
       new ReactNativeConfigPackage(),
-      new FBSDKPackage(mCallbackManager)
+      new FBSDKPackage(mCallbackManager),
+      new ColorMatrixImageFiltersPackage(),
     );
   }
 

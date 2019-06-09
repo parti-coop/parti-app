@@ -1,6 +1,6 @@
 import React, { memo, Component, PureComponent } from 'react';
 import { View, Image,
-  ScrollView, SectionList,
+  ScrollView,
   TouchableOpacity, StyleSheet, Platform, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, FlatList, Image,
-  ScrollView, SectionList,
+  ScrollView,
   TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
 import { Root, Content, Text, ActionSheet,
   Button, Card, CardItem, Thumbnail, Left, Body, Right } from 'native-base';
@@ -121,6 +121,61 @@ class ChannelScreen extends Component {
     this.navButtonListener = null;
   }
 
+  renderPost = ({ item: post }) => (
+    <Card style={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}>
+      {
+        !!post.lastStroked.text && !!post.lastStroked.at &&
+        <CardItem style={{ backgroundColor: '#eee', padding: 5 }}>
+          <Text>{post.lastStroked.text} {post.lastStroked.at}</Text>
+        </CardItem>
+      }
+      <CardItem header>
+        <Left>
+          <Thumbnail source={{ uri: post.user.imageUrl }} />
+          <Body>
+            <Text style={{ fontWeight: 'bold' }}>{post.user.nickname} {post.key}</Text>
+            <Text style={{ color: '#aaa' }}>{post.user.nickname}</Text>
+          </Body>
+        </Left>
+        <Right>
+          <Icon size={15} name={Platform.select({android: "md-more", ios: "ios-more"})} />
+        </Right>
+      </CardItem>
+      {
+        !!post.body && post.body.length > 0 &&
+        <CardItem cardBody>
+          <Left>
+            <HTML html={post.body}
+              imagesMaxWidth={Dimensions.get('window').width}
+              ignoredStyles={['display', 'width', 'height', 'font-family']}
+              containerStyle={{ paddingLeft: 15, paddingRight: 15 }}
+            />
+          </Left>
+        </CardItem>
+      }
+      <CardItem>
+        <Left>
+          <Button transparent>
+            <Icon size={15} name={Platform.select({android: "md-heart", ios: "ios-heart"})} />
+            <Text style={{ marginLeft: 5 }}>공감해요 {post.upvotesCount > 0 && post.upvotesCount}</Text>
+          </Button>
+        </Left>
+        <Body>
+          <Button transparent style={{ justifyContent: 'center' }}>
+            <Icon size={15} name={Platform.select({android: "md-text", ios: "ios-text"})} />
+            <Text style={{ marginLeft: 5 }}>댓글달기 {post.commentsCount > 0 && post.commentsCount}</Text>
+          </Button>
+        </Body>
+        <Right>
+          <Button transparent>
+            <Icon size={15} name={Platform.select({android: "md-share-alt", ios: "ios-share-alt"})} />
+            <Text style={{ marginLeft: 5 }}>공유하기</Text>
+          </Button>
+        </Right>
+      </CardItem>
+    </Card>
+  );
+
   // renderSectionHeader = ({section: {group}}) => {
   //   console.log('Section GroupID', group.id)
   //   return (<GroupSectionHeader group={group} onGroupPressed={this.onGroupPressedHandler} />);
@@ -162,36 +217,28 @@ class ChannelScreen extends Component {
 
   render() {
     if(!this.state.currentChannel) {
-        let newCountTexts = [];
-        if(this.props.currentUser.newMessagesCount && this.props.currentUser.newMessagesCount > 0) {
-          newCountTexts.push(`새 알림 ${this.props.currentUser.newMessagesCount}개`);
-        }
-        if(this.props.currentUser.newMentionsCount && this.props.currentUser.newMentionsCount > 0) {
-          newCountTexts.push(`새 멘션 ${this.props.currentUser.newMentionsCount}개`);
-        }
+      let newCountTexts = [];
+      if(this.props.currentUser.newMessagesCount && this.props.currentUser.newMessagesCount > 0) {
+        newCountTexts.push(`새 알림 ${this.props.currentUser.newMessagesCount}개`);
+      }
+      if(this.props.currentUser.newMentionsCount && this.props.currentUser.newMentionsCount > 0) {
+        newCountTexts.push(`새 멘션 ${this.props.currentUser.newMentionsCount}개`);
+      }
 
-        let subWelcome;
-        if(newCountTexts.length > 0) {
-          subWelcome = `${newCountTexts.join(", ")}가 있습니다.`
+      let subWelcome;
+      if(newCountTexts.length > 0) {
+        subWelcome = `${newCountTexts.join(", ")}가 있습니다.`
+      } else {
+        const hours = new Date().getHours();
+        const isDayTime = hours > 3 && hours < 15;
+
+        if(isDayTime) {
+          subWelcome = "멋진 하루 보내세요!";
         } else {
-          const hours = new Date().getHours();
-          const isDayTime = hours > 3 && hours < 15;
-
-          if(isDayTime) {
-            subWelcome = "멋진 하루 보내세요!";
-          } else {
-            subWelcome = "오늘 하루 어떻게 보내셨나요?";
-          }
+          subWelcome = "오늘 하루 어떻게 보내셨나요?";
         }
+      }
 
-      /*
-      <SectionList
-            initialNumToRender={10}
-            renderSectionHeader={this.renderSectionHeader}
-            renderItem={this.renderItem}
-            sections={this.props.homeGroups}
-          />
-       */
       return (
         <Root>
           <View style={commonStyles.flexCenterContainer}>
@@ -205,10 +252,8 @@ class ChannelScreen extends Component {
     }
 
     return (
-      <Content contentContainerStyle={styles.container}>
-        <View style={{ width: '100%', flexDirection: 'row',
-        paddingTop: 50, paddingBottom: 50, paddingLeft: 10, paddingRight: 10,
-        backgroundColor: "#eee" }}>
+      <Content contentContainerStyle={commonStyles.flexContainer}>
+        <View style={styles.headerContainer}>
           <Image source={{ url: this.state.currentChannel.logoUrl }} style={{ width: 80, height: 80 }} />
           <View style={{ marginLeft: 10 }}>
             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{this.state.currentChannel.title}</Text>
@@ -217,58 +262,7 @@ class ChannelScreen extends Component {
         <FlatList
           style={{ width: '100%' }}
           data={this.props.posts}
-          renderItem={({ item: post }) => (
-            <Card style={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}>
-              { !!post.lastStroked.text && !!post.lastStroked.at &&
-                <CardItem style={{ backgroundColor: '#eee', padding: 5 }}>
-                  <Text>{post.lastStroked.text} {post.lastStroked.at}</Text>
-                </CardItem>
-              }
-              <CardItem header>
-                <Left>
-                  <Thumbnail source={{ uri: post.user.imageUrl }} />
-                  <Body>
-                    <Text style={{ fontWeight: 'bold' }}>{post.user.nickname} {post.key}</Text>
-                    <Text style={{ color: '#aaa' }}>{post.user.nickname}</Text>
-                  </Body>
-                </Left>
-                <Right>
-                  <Icon size={15} name={Platform.select({android: "md-more", ios: "ios-more"})} />
-                </Right>
-              </CardItem>
-              { !!post.body && post.body.length > 0 &&
-                <CardItem cardBody>
-                  <Left>
-                    <HTML html={post.body}
-                      imagesMaxWidth={Dimensions.get('window').width}
-                      ignoredStyles={['display', 'width', 'height', 'font-family']}
-                      containerStyle={{ paddingLeft: 15, paddingRight: 15 }}
-                    />
-                  </Left>
-                </CardItem>
-              }
-              <CardItem>
-                <Left>
-                  <Button transparent>
-                    <Icon size={15} name={Platform.select({android: "md-heart", ios: "ios-heart"})} />
-                    <Text style={{ marginLeft: 5 }}>공감해요 {post.upvotesCount > 0 && post.upvotesCount}</Text>
-                  </Button>
-                </Left>
-                <Body>
-                  <Button transparent style={{ justifyContent: 'center' }}>
-                    <Icon size={15} name={Platform.select({android: "md-text", ios: "ios-text"})} />
-                    <Text style={{ marginLeft: 5 }}>댓글달기 {post.commentsCount > 0 && post.commentsCount}</Text>
-                  </Button>
-                </Body>
-                <Right>
-                  <Button transparent>
-                    <Icon size={15} name={Platform.select({android: "md-share-alt", ios: "ios-share-alt"})} />
-                    <Text style={{ marginLeft: 5 }}>공유하기</Text>
-                  </Button>
-                </Right>
-              </CardItem>
-            </Card>
-          )}
+          renderItem={this.renderPost}
         />
       </Content>
     );
@@ -276,16 +270,15 @@ class ChannelScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  welcomContainer: {
-    alignItems: 'center',
-  },
-  // spinnerTextStyle: {
-  //   color: '#fff'
-  // },
-  item: {
+  headerContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    paddingTop: 50,
+    paddingBottom: 50,
     paddingLeft: 10,
-    paddingRight: 10
-  }
+    paddingRight: 10,
+    backgroundColor: "#eee"
+  },
 });
 
 const mapStateToProps = state => {

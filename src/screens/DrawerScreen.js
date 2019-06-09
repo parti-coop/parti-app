@@ -1,16 +1,22 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList,
-  TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, FlatList, SectionList,
+  TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { connect } from 'react-redux';
 import { getInset } from 'react-native-safe-area-view';
 import { Navigation } from 'react-native-navigation';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { Grayscale } from 'react-native-color-matrix-image-filters';
 
 import { homeLoadGroupsRequested } from '../store/effects';
 import { goToHomeRootGroup, goToHomeRootChannel } from './routes';
-import { drawerGroupsSelector, drawerChannelsSelector } from '../store/selectors/drawer';
+import { drawerGroupsSelector, drawerChannelsGroupByCategory }
+  from '../store/selectors/drawer';
 import { homeSelectGroup, homeSelectChannel,
   uiHomeActiveDrawer, uiHomeInactiveDrawer } from '../store/actions';
+import Channel from '../store/models/Channel';
+import Category from '../store/models/Category';
+import commonStyles from '../styles/common';
 
 class DrawerScreen extends Component {
   onGroupPressedHandler = async (group) => {
@@ -25,16 +31,30 @@ class DrawerScreen extends Component {
 
   renderGroup = ({ item: group }) => (
     <TouchableOpacity style={styles.groupTouchable} onPress={() => this.onGroupPressedHandler(group)}>
-      <Thumbnail source={{ uri: group.logoUrl }} style={styles.groupThumnail} />
+      <Grayscale amount={group.id === this.props.selectedGroup.id ? 0 : 0.8}>
+        <Thumbnail source={{ uri: group.logoUrl }} style={styles.groupThumnail} />
+      </Grayscale>
+      <Text numberOfLines={1} ellipsizeMode='tail' style={{color: "#eee", fontSize: 9, paddingTop: 3, paddingLeft: 3, paddingRight: 3}}>{group.title}</Text>
     </TouchableOpacity>
   );
 
-  renderChannel = ({ item: channel }) => {
-    const selected = (this.props.selectedChannel?.id === channel?.id);
+  renderCategory = ({section: category, index}) => {
     return (
-      <TouchableOpacity style={[styles.channelTouchable, (selected && styles.selectedChannelTouchable)]} onPress={() => this.onChannelPressedHandler(channel)}>
-        <Text style={[styles.channelText, (selected && styles.selectedChannelText)]}>#{channel.title}</Text>
-      </TouchableOpacity>
+      <View style={styles.categoryContainer}>
+        <Icon size={14} color="white" name={Platform.select({android: "md-arrow-dropright", ios: "ios-arrow-dropright"})} />
+        <Text style={{fontSize: 14, color: 'white', marginLeft: 5}}>{category.name}</Text>
+      </View>
+    );
+  };
+
+  renderChannel = ({item: channel}) => {
+    const selected = (this.props.selectedChannel?.id === channel.id);
+    return (
+      <View style={styles.channelContainer}>
+        <TouchableOpacity style={[styles.channelTouchable, (selected && styles.selectedChannelTouchable)]} onPress={() => this.onChannelPressedHandler(channel)}>
+          <Text style={[styles.channelText, (selected && styles.selectedChannelText)]}># {channel.title}</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
@@ -72,22 +92,53 @@ class DrawerScreen extends Component {
     const { width, height } = Dimensions.get('window');
     const landScape = width > height;
     const topPadding = getInset('top', landScape);
+    const bottomPadding = getInset('bottom', landScape);
+    const styleSafeArea = { paddingTop: topPadding, paddingBottom: bottomPadding }
 
+    let categoriesView;
+    if(!!this.props.selectedGroup) {
+      if(this.props.channelsGroupByCategory?.length > 0) {
+        categoriesView = (
+          <View style={commonStyles.flexContainer}>
+            <View style={styles.groupHeaderContainer}>
+              <Thumbnail source={{ url: this.props.selectedGroup.logoUrl }} />
+              <Text numberOfLines={2} ellipsizeMode='tail' style={styles.groupHeaderTitle}>
+                {this.props.selectedGroup.title}
+              </Text>
+            </View>
+            <SectionList
+              style={styles.categoriesList}
+              renderSectionHeader={this.renderCategory}
+              renderItem={this.renderChannel}
+              sections={this.props.channelsGroupByCategory}
+            />
+          </View>
+        );
+      } else {
+        categoriesView = (
+          <View style={commonStyles.flexCenterContainer}>
+            <Text style={{ color: 'white' }}>로딩 중...</Text>
+          </View>
+        );
+      }
+    } else {
+      categoriesView = (
+        <View style={commonStyles.flexCenterContainer}>
+          <Text style={{ color: 'white' }}>그룹을 선택해 주세요!</Text>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
-        <View style={[styles.groupsContainer, { paddingTop: topPadding }]}>
+        <View style={[styles.groupsContainer, styleSafeArea]}>
           <FlatList
-            style={styles.groups}
+            style={styles.groupsList}
             data={this.props.groups}
             renderItem={this.renderGroup}
           />
         </View>
-        <View style={[styles.channelsContainer, { paddingTop: topPadding }]}>
-          <FlatList
-            style={styles.channels}
-            data={this.props.channels}
-            renderItem={this.renderChannel}
-          />
+        <View style={[styles.categoriesContainer, styleSafeArea]}>
+          {categoriesView}
         </View>
       </View>
     );
@@ -103,12 +154,25 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  groups: {
+  groupsList: {
     width: '100%',
   },
   groupsContainer: {
     width: 80,
     backgroundColor: '#160b27',
+  },
+  groupHeaderContainer: {
+    flexDirection: 'row',
+    paddingLeft: 14,
+    paddingRight: 14,
+    marginBottom: 20,
+  },
+  groupHeaderTitle: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    paddingLeft: 10,
   },
   groupTouchable: {
     alignItems: 'center',
@@ -117,11 +181,24 @@ const styles = StyleSheet.create({
   },
   groupThumnail: {
   },
-  channelsContainer: {
+  categoriesContainer: {
     flex: 1,
     backgroundColor: '#271446',
   },
-  channels: {
+  categoriesList: {
+    width: '100%',
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    paddingLeft: 10,
+    paddingTop: 25,
+    paddingBottom: 10,
+    backgroundColor: '#271446',
+  },
+  categoryContainerDefault: {
+    paddingTop: 20,
+  },
+  channelContainer: {
     width: '100%',
   },
   channelTouchable: {
@@ -144,7 +221,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
   return {
     groups: drawerGroupsSelector(state),
-    channels: drawerChannelsSelector(state),
+    channelsGroupByCategory: drawerChannelsGroupByCategory(state),
     currentUser: state.currentUser,
     selectedGroup: state.home.selectedGroup,
     selectedChannel: state.home.selectedChannel,
