@@ -17,15 +17,15 @@ export const homeGroupsSelector = ormCreateSelector(
 
     const uncategorizedChannels = [];
     const categorizedChannels = {};
-    groupView.isGroupUnread = false;
+    groupView.isUnread = false;
     groupModel.channels.filter({ isMember: true }).toRefArray().forEach((channelRef) => {
       const channelView = {
         ...channelRef,
         key: String(channelRef.id),
         group: Object.assign({}, groupModel.ref),
       };
-      if (!groupView.isGroupUnread) {
-        groupView.isGroupUnread = channelRef.isUnread;
+      if (!groupView.isUnread) {
+        groupView.isUnread = channelRef.isUnread;
       }
       const { categoryId } = channelRef;
       if (categoryId) {
@@ -40,10 +40,11 @@ export const homeGroupsSelector = ormCreateSelector(
     groupView.categories = [];
     Object.keys(categorizedChannels).forEach((categoryId) => {
       const categoryRef = session.Category.withId(categoryId).ref;
-      const isChannelUnread = categorizedChannels[categoryId].some(channelView => channelView.isUnread);
+      const isChannelUnread = categorizedChannels[categoryId]
+        .some(channelView => channelView.isUnread);
       groupView.categories.push({
         ...categoryRef,
-        isChannelUnread,
+        isUnread: isChannelUnread,
         key: categoryRef.id.toString(),
         channels: categorizedChannels[categoryId]
       });
@@ -54,11 +55,12 @@ export const homeGroupsSelector = ormCreateSelector(
       const isChannelUnread = uncategorizedChannels.some(channelView => channelView.isUnread);
       groupView.categories.push({
         ...Category.nullObject(hasSibling),
-        isChannelUnread,
+        isUnread: isChannelUnread,
         key: `null-${groupModel.id.toString()}`,
         channels: uncategorizedChannels
       });
     }
+
     return groupView;
   }).map(group => ({
     group,

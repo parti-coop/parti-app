@@ -136,7 +136,7 @@ class HomeScreen extends Component {
 
   renderItem = ({ item, section: { group } }) => {
     const isCategory = Object.prototype.hasOwnProperty.call(item, 'channels');
-    const isExpanded = this.state.expandedGroupIds.includes(group.id);
+    const isExpanded = this.state.expandedGroupIds.includes(group.id) || item.isUnread;
 
     let content;
     if (isCategory) {

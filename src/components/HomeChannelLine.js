@@ -17,7 +17,13 @@ class HomeChannelLine extends PureComponent {
             source={{ url: this.props.channel.logoUrl }}
             style={[styles.logo, { height: logoHeight }]}
           />
-          <Text style={styles.title}>{this.props.channel.title}</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{this.props.channel.title}</Text>
+            {
+              this.props.channel.isUnread
+              && <View style={styles.newBadge}><Text style={styles.newBadgeText}>N</Text></View>
+            }
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -36,9 +42,27 @@ const styles = StyleSheet.create({
     marginRight: 8,
     borderRadius: 5,
   },
-  title: {
+  titleContainer: {
     flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  title: {
     fontSize: 16,
+  },
+  newBadge: {
+    width: 16,
+    height: 16,
+    marginLeft: 4,
+    borderRadius: 14,
+    backgroundColor: '#ff0000',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  newBadgeText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: 'white',
   },
 });
 
