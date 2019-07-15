@@ -16,7 +16,6 @@ import { homeGroupsSelector } from '../store/selectors/home';
 import { loadedIconsMap } from '../lib/AppIcons';
 import commonColors from '../styles/colors';
 import HomeGroupLine from '../components/HomeGroupLine';
-import Category from '../store/models/Category';
 import HomeChannelLine from '../components/HomeChannelLine';
 
 const BUTTON_ID_MORE = 'BUTTON_ID_MORE';
@@ -148,7 +147,11 @@ class HomeScreen extends Component {
       );
     } else {
       content = (
-        <HomeChannelLine channel={item} onChannelPressed={this.channelPressedHanlder} />
+        <HomeChannelLine
+          channel={item}
+          onChannelPressed={this.channelPressedHanlder}
+          isExpanded={isExpanded}
+        />
       );
     }
     return (

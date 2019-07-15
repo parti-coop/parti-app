@@ -3,7 +3,7 @@ import { Input } from 'native-base';
 
 const BasicInput = props => (
   <Input
-    autoCapitalize={'none'}
+    autoCapitalize="none"
     autoCorrect={false}
     {...props}
   />
