@@ -1,8 +1,7 @@
-import { PropTypes } from 'React';
-import { Model, fk, many, attr } from 'redux-orm';
+import { Model, many, attr } from 'redux-orm';
 import propTypesMixin from 'redux-orm-proptypes';
 
-import { HOME_LOAD_GROUPS_RESPONDED } from  '../actionTypes';
+import { HOME_LOAD_GROUPS_RESPONDED } from '../actionTypes';
 
 const ValidatingModel = propTypesMixin(Model);
 
@@ -17,7 +16,7 @@ class Group extends ValidatingModel {
       isMember: attr(),
       categories: many('Category'),
       channels: many('Channel'),
-    }
+    };
   }
 
   static get modelName() {
@@ -26,22 +25,21 @@ class Group extends ValidatingModel {
 
   static parse(data) {
     const { Category, Channel } = this.session;
-    let clonedData = {
+    const clonedData = {
       ...data,
       key: String(data.id),
-      categories : data.categories.map(category => Category.upsert(category)),
-      channels : data.channels.map(channel => Channel.upsert(channel))
+      categories: data.categories.map(category => Category.upsert(category)),
+      channels: data.channels.map(channel => Channel.upsert(channel))
     };
-
     return this.upsert(clonedData);
   }
 
-  static reducer(action, Group, session) {
-    switch(action.type){
+  static reducer(action, SessionSpecificGroup) {
+    switch (action.type) {
       case HOME_LOAD_GROUPS_RESPONDED:
-        action.groups?.map((group) => {
-          Group.parse(group);
-        });
+        action.groups?.map(group => SessionSpecificGroup.parse(group));
+        break;
+      default:
         break;
     }
   }

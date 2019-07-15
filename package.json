@@ -28,6 +28,7 @@
     "react-native-color-matrix-image-filters": "5.1.5",
     "react-native-config": "^0.11.7",
     "react-native-fbsdk": "^0.8.0",
+    "react-native-linear-gradient": "2.5.4",
     "react-native-loading-spinner-overlay": "^1.0.1",
     "react-native-navigation": "^2.21.0",
     "react-native-render-html": "^4.1.2",
@@ -47,13 +48,24 @@
     "@babel/core": "^7.4.4",
     "@babel/runtime": "^7.4.4",
     "@jonny/react-native-mock": "^0.4.2",
+    "babel-eslint": "10.0.2",
     "babel-jest": "^24.8.0",
     "detox": "^12.10.2",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.13.2",
-    "eslint": "^5.16.0",
+    "eslint": "5.16.0",
+    "eslint-config-airbnb": "17.1.1",
+    "eslint-config-rallycoding": "3.2.0",
+    "eslint-plugin-babel": "5.3.0",
+    "eslint-plugin-import": "2.18.0",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.14.2",
+    "eslint-plugin-react-native": "3.7.0",
+    "husky": "3.0.0",
     "jest": "^24.8.0",
+    "lint-staged": "9.2.0",
     "metro-react-native-babel-preset": "^0.54.1",
+    "pretty-quick": "1.11.1",
     "react-dom": "^16.8.6",
     "react-test-renderer": "16.8.3"
   },
@@ -66,5 +78,16 @@
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
     ]
+  },
+  "plugins": [
+    "react",
+    "react-native"
+  ],
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    }
   }
 }

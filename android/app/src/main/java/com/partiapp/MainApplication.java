@@ -3,6 +3,7 @@ package com.partiapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.BV.LinearGradient.LinearGradientPackage;
 import iyegoroff.RNColorMatrixImageFilters.ColorMatrixImageFiltersPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
@@ -52,6 +53,7 @@ public class MainApplication extends NavigationApplication {
       new ReactNativeConfigPackage(),
       new FBSDKPackage(mCallbackManager),
       new ColorMatrixImageFiltersPackage(),
+      new LinearGradientPackage(),
     );
   }
 

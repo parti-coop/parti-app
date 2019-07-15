@@ -16,7 +16,6 @@ import { uiStartLoading, uiStopLoading,
 import { authSignOut, channelLoadMorePostsRequested } from '../store/effects';
 import requiredCurrentUser from '../components/requiredCurrentUser';
 import ChannelListHorizontal from '../components/ChannelListHorizontal';
-import GroupSectionHeader from '../components/GroupSectionHeader';
 import { goToHomeRootGroup, goToHomeRootChannel, NAV_ID_HOME_CONTAINER } from './routes';
 import { homeGroupsSelector } from '../store/selectors/home';
 import { loadedIconsMap } from '../lib/AppIcons';

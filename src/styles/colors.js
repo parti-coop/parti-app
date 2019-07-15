@@ -4,4 +4,5 @@ export default {
   darkGreen: '#52796F',
   lightGreen: '#84A98C',
   lightGrey: '#CAD2C5',
+  toolbarGray: '#6d7278',
 };

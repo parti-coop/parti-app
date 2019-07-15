@@ -1,85 +1,73 @@
-import orm from '../models'
 import { createSelector as ormCreateSelector } from 'redux-orm';
+import orm from '../models';
+
+import Category from '../models/Category';
 
 // export const getEntitiesSession = createSelector(
 //   ormSelector,
 //   entities => orm.from(entities)
 // );
 
+// eslint-disable-next-line import/prefer-default-export
 export const homeGroupsSelector = ormCreateSelector(
   orm,
-  state => { return state.orm },
-  session => {
-    return session.Group.filter({ isMember: true }).toModelArray().map(groupModel => {
-      const groupRef = Object.assign({uncategorizedChannels: []}, groupModel.ref);
-      const categoryRefArray = groupModel.categories.toRefArray();
+  state => state.orm,
+  session => session.Group.filter({ isMember: true }).toModelArray().map((groupModel) => {
+    const groupView = Object.assign({}, groupModel.ref);
 
-      const categoryIdArray = categoryRefArray.map((categoryRef) => categoryRef.id);
-      let dictChannels = groupModel.channels.filter({ isMember: true }).toRefArray().reduce((dictChannels, channelRef) => {
-        channelRef = {
-          ...channelRef,
-          group: Object.assign({}, groupModel.ref),
-        }
-        const categoryId = channelRef.categoryId;
-        if(!!categoryId && categoryIdArray.includes(categoryId)) {
-          (dictChannels[channelRef.categoryId] = dictChannels[channelRef.categoryId] || []).push(channelRef);
-        } else {
-          groupRef.uncategorizedChannels.push(channelRef);
-        }
-        return dictChannels;
-      }, {});
-
-      groupRef.categories = categoryRefArray.map((categoryRef) => {
-        return {
-          ...categoryRef,
-          channels: (dictChannels[categoryRef.id] || []),
-          hasChannelsJoinable: groupModel.channels.filter({ isMember: false, categoryId: categoryRef.id }).exists()
-        }
-      });
-
-      groupRef.hasChannelsJoinable = groupModel.channels.filter({ isMember: false }).exists();
-      groupRef.hasUncategorizedChannelsJoinable = groupModel.channels.filter({ isMember: false, categoryId: null }).exists();
-
-      return groupRef;
-    }).map((group) => {
-      let data;
-      if(group.categories?.length < 0)
-        data= [{
-          key: `${group.id}-all`,
-          type: "channels",
-          hasChannelsJoinable: group.hasChannelsJoinable,
-          channels: group.uncategorizedChannels}]
-      else {
-        data = group.categories.map((category) => {
-          if(category.channels?.length > 0) {
-            return {
-              key: `${group.id}-${category.id}`,
-              type: "category",
-              hasChannelsJoinable: category.hasChannelsJoinable,
-              ...category}
-          }
-        }).filter((e) => e);
-        if(group.uncategorizedChannels?.length > 0) {
-          let type = (data.length > 0 ? "category" : "channels");
-          data.push({
-            key: `${group.id}-uncategorized`,
-            name: '미분류',
-            type: type,
-            channels: group.uncategorizedChannels,
-            hasChannelsJoinable: group.hasUncategorizedChannelsJoinable
-          });
-        }
+    const uncategorizedChannels = [];
+    const categorizedChannels = {};
+    groupView.isGroupUnread = false;
+    groupModel.channels.filter({ isMember: true }).toRefArray().forEach((channelRef) => {
+      const channelView = {
+        ...channelRef,
+        key: String(channelRef.id),
+        group: Object.assign({}, groupModel.ref),
+      };
+      if (!groupView.isGroupUnread) {
+        groupView.isGroupUnread = channelRef.isUnread;
       }
-
-      if(data.length <= 0) {
-        [{
-          key: `${group.id}-all`,
-          type: "channels",
-          channels: [],
-          hasChannelsJoinable: true
-        }];
+      const { categoryId } = channelRef;
+      if (categoryId) {
+        // eslint-disable-next-line max-len
+        categorizedChannels[channelRef.categoryId] = categorizedChannels[channelRef.categoryId] || [];
+        categorizedChannels[channelRef.categoryId].push(channelView);
+      } else {
+        uncategorizedChannels.push(channelView);
       }
-      return {group: group, data: data}
     });
-  }
+
+    groupView.categories = [];
+    Object.keys(categorizedChannels).forEach((categoryId) => {
+      const categoryRef = session.Category.withId(categoryId).ref;
+      const isChannelUnread = categorizedChannels[categoryId].some(channelView => channelView.isUnread);
+      groupView.categories.push({
+        ...categoryRef,
+        isChannelUnread,
+        key: categoryRef.id.toString(),
+        channels: categorizedChannels[categoryId]
+      });
+    });
+
+    if (uncategorizedChannels.length > 0) {
+      const hasSibling = (categorizedChannels.length > 0);
+      const isChannelUnread = uncategorizedChannels.some(channelView => channelView.isUnread);
+      groupView.categories.push({
+        ...Category.nullObject(hasSibling),
+        isChannelUnread,
+        key: `null-${groupModel.id.toString()}`,
+        channels: uncategorizedChannels
+      });
+    }
+    return groupView;
+  }).map(group => ({
+    group,
+    data: group.categories.reduce((data, category) => {
+      if (!Category.isNullObject(category) || category.hasSibling) {
+        data.push(category);
+      }
+      category.channels.map(channel => data.push(channel));
+      return data;
+    }, [])
+  }))
 );

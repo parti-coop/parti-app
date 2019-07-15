@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { connect } from "react-redux";
-import { Navigation } from 'react-native-navigation';
+import { connect } from 'react-redux';
 import { persistStore as persistStoreRaw } from 'redux-persist';
 
-import { authAutoSignIn } from "../store/effects";
+import { authAutoSignIn } from '../store/effects';
 
 class InitializingScreen extends Component {
   static options() {
@@ -17,6 +16,12 @@ class InitializingScreen extends Component {
     };
   }
 
+  componentDidMount() {
+    this.persistStore(this.props.store).then(() => {
+      this.props.onAutoSignIn();
+    });
+  }
+
   /**
    * Wait till our store is persisted
    * @param {store} storeToPersist - The redux store to persist
@@ -27,12 +32,6 @@ class InitializingScreen extends Component {
       resolve();
     });
   });
-
-  componentDidMount() {
-    this.persistStore(this.props.store).then(() => {
-      this.props.onAutoSignIn();
-    });
-  }
 
   render() {
     return (
@@ -56,10 +55,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onAutoSignIn: () => dispatch(authAutoSignIn())
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  onAutoSignIn: () => dispatch(authAutoSignIn())
+});
 
 export default connect(null, mapDispatchToProps)(InitializingScreen);

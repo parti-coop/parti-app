@@ -1,16 +1,20 @@
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { Navigation } from "react-native-navigation";
+import {
+  Provider
+} from 'react-redux';
+import { Navigation } from 'react-native-navigation';
+import { registerScreens, setInitialLayout } from './src/screens';
 
-import { loadIcons } from "./src/lib/AppIcons";
+import { loadIcons } from './src/lib/AppIcons';
 import { goToInitialize } from './src/screens/routes';
 
-async function bootstrap(store) {
+async function bootstrap() {
   await loadIcons();
 }
 
 export default (store) => {
+  registerScreens(store, Provider);
   Navigation.events().registerAppLaunchedListener(() => {
-    bootstrap(store).then(() => goToInitialize(store));
+    setInitialLayout();
+    bootstrap().then(() => goToInitialize(store));
   });
-}
+};

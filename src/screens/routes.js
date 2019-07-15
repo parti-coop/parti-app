@@ -1,5 +1,4 @@
-import { Platform, Dimensions } from 'react-native';
-import { Navigation } from 'react-native-navigation'
+import { Navigation } from 'react-native-navigation';
 
 import { loadedIconsMap } from '../lib/AppIcons';
 
@@ -9,16 +8,17 @@ const NAV_ID_EMAIL_SIGN_IN = 'emailSignIn';
 const NAV_ID_SIGN_UP = 'signUp';
 const NAV_ID_HOME_CHANNEL = 'homeChannel';
 export const NAV_ID_HOME_CONTAINER = 'homeContainer';
+const NAV_ID_HOME = 'homeRoot';
 
-export const goToInitialize = (store) => Navigation.setRoot({
+export const goToInitialize = store => Navigation.setRoot({
   root: {
     component: {
-      name: "Initializing",
+      name: 'Initializing',
       passProps: {
-        store: store,
-      }
-    }
-  }
+        store,
+      },
+    },
+  },
 });
 
 export const goToAuthRoot = async () => {
@@ -36,23 +36,23 @@ export const goToAuthRoot = async () => {
                     name: 'Auth:SignIn',
                     options: {
                       topBar: {
-                        visible: false
-                      }
-                    }
-                  }
+                        visible: false,
+                      },
+                    },
+                  },
                 },
               ],
               options: {
                 bottomTab: {
                   text: 'Sign In',
-                  icon: loadedIconsMap.signIn
+                  icon: loadedIconsMap.signIn,
                 },
                 bottomTabs: {
                   visible: false,
-                  animate: false
-                }
-              }
-            }
+                  animate: false,
+                },
+              },
+            },
           },
           {
             component: {
@@ -61,34 +61,36 @@ export const goToAuthRoot = async () => {
               options: {
                 bottomTab: {
                   text: 'Sign Up',
-                  icon: loadedIconsMap.signUp
+                  icon: loadedIconsMap.signUp,
                 },
                 bottomTabs: {
                   visible: false,
-                  animate: false
-                }
-              }
+                  animate: false,
+                },
+              },
             },
           },
         ],
-      }
-    }
+      },
+    },
   });
-}
+};
 
 export const goToAuthRootSignIn = () => Navigation.mergeOptions(
   NAV_ID_AUTH_TAB, {
     bottomTabs: {
-      currentTabId: NAV_ID_SIGN_IN
-    }
-});
+      currentTabId: NAV_ID_SIGN_IN,
+    },
+  },
+);
 
 export const goToAuthRootSignUp = () => Navigation.mergeOptions(
   NAV_ID_AUTH_TAB, {
     bottomTabs: {
-      currentTabId: NAV_ID_SIGN_UP
-    }
-});
+      currentTabId: NAV_ID_SIGN_UP,
+    },
+  },
+);
 
 export const goToAuthRootEmailSignIn = (componentId) => {
   goToAuthRootSignIn();
@@ -100,71 +102,51 @@ export const goToAuthRootEmailSignIn = (componentId) => {
         options: {
           topBar: {
             title: {
-              text: '이메일 로그인'
-            }
-          }
-        }
-      }
-    }
-  );
-}
-
-export const goToHomeRoot = () => {
-  /*
-   * Default drawer width is screen width - header height
-   * with a max width of 280 on mobile and 320 on tablet
-   * https://material.io/guidelines/patterns/navigation-drawer.html
-   */
-  const { height, width } = Dimensions.get('window');
-  const smallerAxisSize = Math.min(height, width);
-  const isLandscape = width > height;
-  const isTablet = smallerAxisSize >= 600;
-  const appBarHeight = Platform.OS === 'ios' ? (isLandscape ? 32 : 44) : 56;
-  const maxWidth = isTablet ? 320 : 280;
-  const drawerWidth =  Math.min(smallerAxisSize - appBarHeight, maxWidth) + 20;
-
-  return Navigation.setRoot({
-    root: {
-      sideMenu: {
-        id: NAV_ID_HOME_CONTAINER,
-        left: {
-          component: {
-            id: 'Drawer',
-            name: 'Drawer',
-          },
-        },
-        center: {
-          stack: {
-            id: NAV_ID_HOME_CHANNEL,
-            children: [
-              {
-                component: {
-                  name: 'Channel',
-                }
-              }
-          ],
-          }
-        },
-        options: {
-          sideMenu: {
-            left: {
-              width: drawerWidth,
+              text: '이메일 로그인',
             },
           },
-        }
-      }
-    }
-  });
-}
+        },
+      },
+    },
+  );
+};
 
-export const goToHomeRootGroup = (componentId) => Navigation.showModal({
+/*
+  * Default drawer width is screen width - header height
+  * with a max width of 280 on mobile and 320 on tablet
+  * https://material.io/guidelines/patterns/navigation-drawer.html
+  */
+// const { height, width } = Dimensions.get('window');
+// const isLandscape = width > height;
+// const appBarHeight = Platform.OS === 'ios' ? (isLandscape ? 32 : 44) : 56;
+export const goToHomeRoot = () => Navigation.setRoot({
+  root: {
+    stack: {
+      id: NAV_ID_HOME,
+      children: [
+        {
+          component: {
+            name: 'Home',
+            options: {
+              topBar: {
+                noBorder: true,
+              }
+            },
+          },
+        },
+      ],
+    },
+  },
+});
+
+export const goToHomeRootGroup = () => Navigation.showModal({
   stack: {
     children: [{
       component: {
-        name: 'Group'
-      }
-    }]
-  }
+        name: 'Group',
+      },
+    }],
+  },
 });
 
 export const goToHomeRootChannel = (leftMenu = false) => Navigation.setStackRoot(
@@ -174,10 +156,10 @@ export const goToHomeRootChannel = (leftMenu = false) => Navigation.setStackRoot
       options: {
         sideMenu: {
           left: {
-            visible: leftMenu
-          }
-        }
-      }
-    }
-  }
+            visible: leftMenu,
+          },
+        },
+      },
+    },
+  },
 );
