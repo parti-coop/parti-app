@@ -1,4 +1,4 @@
-import { HOME_SELECT_GROUP, HOME_SELECT_CHANNEL } from "../actionTypes";
+import { HOME_SELECT_GROUP, HOME_SELECT_CHANNEL } from '../actionTypes';
 
 const initialState = {
   selectedGroup: null,

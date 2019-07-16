@@ -3,10 +3,10 @@ import {
   View, Image, Text, TouchableOpacity, StyleSheet
 } from 'react-native';
 
-const LOGO_SIZE = 36;
+const LOGO_SIZE = 20;
 
 class HomeChannelLine extends PureComponent {
-  channelPressedHandler = () => this.props.onChannelPressed(this.props.channel);
+  channelPressedHandler = () => this.props.onChannelPressed(this.props.group, this.props.channel);
 
   render() {
     const logoHeight = this.props.isExpanded ? LOGO_SIZE : 0;
@@ -18,10 +18,19 @@ class HomeChannelLine extends PureComponent {
             style={[styles.logo, { height: logoHeight }]}
           />
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{this.props.channel.title}</Text>
+            <Text
+              style={[styles.title, { marginRight: (this.props.channel.isUnread ? 55 : 0) }]}
+              numberOfLines={1}
+            >
+              {this.props.channel.title}
+            </Text>
             {
               this.props.channel.isUnread
-              && <View style={styles.newBadge}><Text style={styles.newBadgeText}>N</Text></View>
+              && (
+                <View style={styles.newBadgeContainer}>
+                  <Text style={styles.newBadge}>N</Text>
+                </View>
+              )
             }
           </View>
         </View>
@@ -43,26 +52,28 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   titleContainer: {
-    flex: 1,
+    flex: 0,
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
+    position: 'relative',
   },
   title: {
     fontSize: 16,
   },
-  newBadge: {
+  newBadgeContainer: {
+    position: 'relative',
+    right: 45,
     width: 16,
     height: 16,
-    marginLeft: 4,
     borderRadius: 14,
     backgroundColor: '#ff0000',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  newBadgeText: {
-    fontSize: 11,
-    fontWeight: '500',
+  newBadge: {
     color: 'white',
+    fontWeight: '500',
+    fontSize: 11,
   },
 });
 

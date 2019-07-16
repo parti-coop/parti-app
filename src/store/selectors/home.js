@@ -17,16 +17,18 @@ export const homeGroupsSelector = ormCreateSelector(
 
     const uncategorizedChannels = [];
     const categorizedChannels = {};
+
     groupView.isUnread = false;
+    const unreadCategoryIds = new Set();
+    let unreadNullCategory = false;
+
     groupModel.channels.filter({ isMember: true }).toRefArray().forEach((channelRef) => {
       const channelView = {
         ...channelRef,
         key: String(channelRef.id),
         group: Object.assign({}, groupModel.ref),
       };
-      if (!groupView.isUnread) {
-        groupView.isUnread = channelRef.isUnread;
-      }
+
       const { categoryId } = channelRef;
       if (categoryId) {
         // eslint-disable-next-line max-len
@@ -35,16 +37,25 @@ export const homeGroupsSelector = ormCreateSelector(
       } else {
         uncategorizedChannels.push(channelView);
       }
+
+      if (channelRef.isUnread) {
+        if (!groupView.isUnread) {
+          groupView.isUnread = true;
+        }
+        if (categoryId) {
+          unreadCategoryIds.add(categoryId);
+        } else {
+          unreadNullCategory = true;
+        }
+      }
     });
 
     groupView.categories = [];
     Object.keys(categorizedChannels).forEach((categoryId) => {
       const categoryRef = session.Category.withId(categoryId).ref;
-      const isChannelUnread = categorizedChannels[categoryId]
-        .some(channelView => channelView.isUnread);
       groupView.categories.push({
         ...categoryRef,
-        isUnread: isChannelUnread,
+        isUnread: unreadCategoryIds.has(categoryRef.id),
         key: categoryRef.id.toString(),
         channels: categorizedChannels[categoryId]
       });
@@ -52,10 +63,9 @@ export const homeGroupsSelector = ormCreateSelector(
 
     if (uncategorizedChannels.length > 0) {
       const hasSibling = (categorizedChannels.length > 0);
-      const isChannelUnread = uncategorizedChannels.some(channelView => channelView.isUnread);
       groupView.categories.push({
         ...Category.nullObject(hasSibling),
-        isUnread: isChannelUnread,
+        isUnread: unreadNullCategory,
         key: `null-${groupModel.id.toString()}`,
         channels: uncategorizedChannels
       });

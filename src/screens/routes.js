@@ -6,8 +6,6 @@ const NAV_ID_AUTH_TAB = 'authTab';
 const NAV_ID_SIGN_IN = 'signIn';
 const NAV_ID_EMAIL_SIGN_IN = 'emailSignIn';
 const NAV_ID_SIGN_UP = 'signUp';
-const NAV_ID_HOME_CHANNEL = 'homeChannel';
-export const NAV_ID_HOME_CONTAINER = 'homeContainer';
 const NAV_ID_HOME = 'homeRoot';
 
 export const goToInitialize = store => Navigation.setRoot({
@@ -139,27 +137,10 @@ export const goToHomeRoot = () => Navigation.setRoot({
   },
 });
 
-export const goToHomeRootGroup = () => Navigation.showModal({
-  stack: {
-    children: [{
-      component: {
-        name: 'Group',
-      },
-    }],
-  },
-});
-
-export const goToHomeRootChannel = (leftMenu = false) => Navigation.setStackRoot(
-  NAV_ID_HOME_CHANNEL, {
+export const goToHomeRootChannel = () => Navigation.push(
+  NAV_ID_HOME, {
     component: {
       name: 'Channel',
-      options: {
-        sideMenu: {
-          left: {
-            visible: leftMenu,
-          },
-        },
-      },
     },
   },
 );

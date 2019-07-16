@@ -18,6 +18,7 @@ import commonColors from '../styles/colors';
 import HomeGroupLine from '../components/HomeGroupLine';
 import HomeChannelLine from '../components/HomeChannelLine';
 
+const BUTTON_ID_LOGO = 'BUTTON_ID_LOGO';
 const BUTTON_ID_MORE = 'BUTTON_ID_MORE';
 const BUTTON_ID_NOTIFICATIONS = 'BUTTON_ID_NOTIFICATIONS';
 const BUTTON_ID_SEARCH = 'BUTTON_ID_SEARCH';
@@ -47,26 +48,28 @@ class HomeScreen extends Component {
     Navigation.mergeOptions(this.props.componentId, {
       topBar: {
         noBorder: true,
-        background: {
-          component: {
-            name: 'HomeTopBarBackground',
-          },
-        },
+        leftButtons: [
+          {
+            id: BUTTON_ID_LOGO,
+            icon: loadedIconsMap.logo,
+            color: commonColors.darkGray,
+          }
+        ],
         rightButtons: [
           {
             id: BUTTON_ID_MORE,
             icon: loadedIconsMap.more,
-            color: commonColors.toolbarGray,
+            color: commonColors.darkGray,
           },
           {
             id: BUTTON_ID_NOTIFICATIONS,
             icon: loadedIconsMap.notifications,
-            color: commonColors.toolbarGray,
+            color: commonColors.darkGray,
           },
           {
             id: BUTTON_ID_SEARCH,
             icon: loadedIconsMap.search,
-            color: commonColors.toolbarGray,
+            color: commonColors.darkGray,
           },
         ],
       },
@@ -100,8 +103,6 @@ class HomeScreen extends Component {
   };
 
   groupPressedHandler = async (group) => {
-    // await this.props.onSelectGroup(group);
-    // goToHomeRootGroup(this.props.componentId);
     this.setState((prevState) => {
       let { expandedGroupIds } = prevState;
       if (expandedGroupIds.includes(group.id)) {
@@ -116,9 +117,9 @@ class HomeScreen extends Component {
     });
   };
 
-  channelPressedHanlder = async (channel) => {
-    await this.props.onSelectChannel(channel);
-    goToHomeRootChannel(this.props.componentId);
+  channelPressedHanlder = async (group, channel) => {
+    await this.props.onSelectChannel(group, channel);
+    goToHomeRootChannel();
   };
 
   renderSectionHeader = ({ section: { group } }) => {
@@ -140,14 +141,19 @@ class HomeScreen extends Component {
 
     let content;
     if (isCategory) {
-      content = (
-        <Text style={styles.categoryText}>
-          {item.name}
-        </Text>
-      );
+      if (isExpanded) {
+        content = (
+          <Text style={styles.categoryText}>
+            {item.name}
+          </Text>
+        );
+      } else {
+        content = <View />;
+      }
     } else {
       content = (
         <HomeChannelLine
+          group={group}
           channel={item}
           onChannelPressed={this.channelPressedHanlder}
           isExpanded={isExpanded}
@@ -292,7 +298,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onSignOut: () => dispatch(authSignOut()),
   // onSelectGroup: group => dispatch(homeSelectGroup(group)),
-  onSelectChannel: channel => dispatch(homeSelectChannel(channel)),
+  onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
   onLoadGroups: () => dispatch(homeLoadGroupsRequested()),
 });
 

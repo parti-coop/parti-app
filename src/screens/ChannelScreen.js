@@ -1,106 +1,42 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, FlatList, Image,
-  ScrollView,
-  TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
-import { Root, Content, Text, ActionSheet,
-  Button, Card, CardItem, Thumbnail, Left, Body, Right } from 'native-base';
+import {
+  View, FlatList, Image, StyleSheet, Platform, Dimensions, ImageBackground
+} from 'react-native';
+import {
+  Root, Text
+} from 'native-base';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Spinner from 'react-native-loading-spinner-overlay';
 import HTML from 'react-native-render-html';
 
-import { uiStartLoading, uiStopLoading,
-  homeSelectGroup, homeSelectChannel,
-  channelClearAll } from '../store/actions';
+import { channelClearAll } from '../store/actions';
 import { authSignOut, channelLoadMorePostsRequested } from '../store/effects';
 import requiredCurrentUser from '../components/requiredCurrentUser';
-import { goToHomeRootGroup, goToHomeRootChannel, NAV_ID_HOME_CONTAINER } from './routes';
-import { homeGroupsSelector } from '../store/selectors/home';
 import { loadedIconsMap } from '../lib/AppIcons';
+import commonColors from '../styles/colors';
 import commonStyles from '../styles/common';
+import SmartMoment from '../components/SmartMoment';
 
-const ACTION_SHEET_INDEX_SIGN_OUT = 0;
-const BUTTON_ID_CURRENT_USER = 'currentUserButton';
-const BUTTON_ID_DRAWER_MENU = 'drawerMenuButton';
+
+const BUTTON_ID_SEARCH = 'BUTTON_ID_SEARCH';
+const CARD_PADDING_H = 16;
+const CARD_PADDING_V = 12;
+const CARD_PADDING_V_LAST_STROKED = 8;
 
 class ChannelScreen extends Component {
   state = {
-    activeActionSheet: false,
     currentChannel: null,
   };
-
-  setNavigationOptions = () => {
-    Navigation.mergeOptions(this.props.componentId, {
-      topBar: {
-        title: {
-          text: this.props.selectedChannel?.title
-        },
-        leftButtons: [
-          {
-            id: BUTTON_ID_DRAWER_MENU,
-            icon: loadedIconsMap.drawerMenu,
-          }
-        ],
-        rightButtons: [
-          {
-            id: BUTTON_ID_CURRENT_USER,
-            icon: loadedIconsMap.currentUser,
-          }
-        ],
-      }
-    });
-  }
-
-  navigationButtonPressedHandler = (event) => {
-    if(event.buttonId === BUTTON_ID_CURRENT_USER) {
-      if(this.state.activeActionSheet) {
-        return;
-      }
-
-      this.setState({ activeActionSheet: true },
-        ActionSheet.show(
-          {
-            options: ["로그아웃", "취소"],
-            cancelButtonIndex: 1,
-            title: "회원 상세"
-          },
-          buttonIndex => {
-            this.setState({ activeActionSheet: false });
-            if(buttonIndex === ACTION_SHEET_INDEX_SIGN_OUT) {
-              this.props.onSignOut();
-            }
-          }
-        )
-      );
-    } else if(event.buttonId === BUTTON_ID_DRAWER_MENU) {
-      Navigation.mergeOptions(NAV_ID_HOME_CONTAINER, {
-        sideMenu: {
-          left: {
-            visible: !this.props.homeActiveDrawer,
-          }
-        }
-      });
-    }
-  };
-
-  // onGroupPressedHandler = async (group) => {
-  //   await this.props.onSelectGroup(group);
-  //   goToHomeRootChannel();
-  // };
-
-  // onChannelPressedHanlder = async (group, channel) => {
-  //   await this.props.onSelectChannel(group, channel);
-  //   goToHomeRootChannel();
-  // };
 
   constructor(props) {
     super(props);
 
     this.setNavigationOptions();
-    this.navButtonListener = Navigation.events().registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
+    this.navButtonListener = Navigation.events()
+      .registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
 
-    if(!!this.props.selectedChannel) {
+    if (this.props.selectedChannel) {
       this.props.onClearAll();
       this.props.onLoadMorePosts(this.props.selectedChannel);
     }
@@ -109,196 +45,328 @@ class ChannelScreen extends Component {
   componentDidMount() {
     this.setState({
       currentChannel: this.props.selectedChannel,
+    }, () => {
+      Navigation.mergeOptions(this.props.componentId, {
+        topBar: {
+          title: {
+            component: {
+              passProps: {
+                channel: this.state.currentChannel,
+              },
+            }
+          },
+        }
+      });
     });
   }
 
   componentWillUnmount() {
-    if(this.navButtonListener) {
+    if (this.navButtonListener) {
       this.navButtonListener.remove();
     }
     this.navButtonListener = null;
   }
 
-  renderPost = ({ item: post }) => (
-    <Card style={{ borderRadius: 0, marginLeft: 0, marginRight: 0 }}>
-      {
-        !!post.lastStroked.text && !!post.lastStroked.at &&
-        <CardItem style={{ backgroundColor: '#eee', padding: 5 }}>
-          <Text>{post.lastStroked.text} {post.lastStroked.at}</Text>
-        </CardItem>
+  setNavigationOptions = () => {
+    Navigation.mergeOptions(this.props.componentId, {
+      topBar: {
+        title: {
+          component: {
+            name: 'ChannelTopBarTitle',
+            alignment: 'fill',
+          }
+        },
+        rightButtons: [
+          {
+            id: BUTTON_ID_SEARCH,
+            icon: loadedIconsMap.search,
+            color: commonColors.darkGray,
+          }
+        ],
       }
-      <CardItem header>
-        <Left>
-          <Thumbnail source={{ uri: post.user.imageUrl }} />
-          <Body>
-            <Text style={{ fontWeight: 'bold' }}>{post.user.nickname} {post.key}</Text>
-            <Text style={{ color: '#aaa' }}>{post.user.nickname}</Text>
-          </Body>
-        </Left>
-        <Right>
-          <Icon size={15} name={Platform.select({android: "md-more", ios: "ios-more"})} />
-        </Right>
-      </CardItem>
-      {
-        !!post.body && post.body.length > 0 &&
-        <CardItem cardBody>
-          <Left>
-            <HTML html={post.body}
-              imagesMaxWidth={Dimensions.get('window').width}
-              ignoredStyles={['display', 'width', 'height', 'font-family']}
-              containerStyle={{ paddingLeft: 15, paddingRight: 15 }}
-            />
-          </Left>
-        </CardItem>
-      }
-      <CardItem>
-        <Left>
-          <Button transparent>
-            <Icon size={15} name={Platform.select({android: "md-heart", ios: "ios-heart"})} />
-            <Text style={{ marginLeft: 5 }}>공감해요 {post.upvotesCount > 0 && post.upvotesCount}</Text>
-          </Button>
-        </Left>
-        <Body>
-          <Button transparent style={{ justifyContent: 'center' }}>
-            <Icon size={15} name={Platform.select({android: "md-text", ios: "ios-text"})} />
-            <Text style={{ marginLeft: 5 }}>댓글달기 {post.commentsCount > 0 && post.commentsCount}</Text>
-          </Button>
-        </Body>
-        <Right>
-          <Button transparent>
-            <Icon size={15} name={Platform.select({android: "md-share-alt", ios: "ios-share-alt"})} />
-            <Text style={{ marginLeft: 5 }}>공유하기</Text>
-          </Button>
-        </Right>
-      </CardItem>
-    </Card>
+    });
+  }
+
+  navigationButtonPressedHandler = () => {
+    alert('개발 중입니다');
+  };
+
+  renderPost = ({ item: post }) => {
+    const hasLastStroked = !!post.lastStroked?.text && !!post.lastStroked?.at;
+
+    return (
+      <View>
+        <View style={itemStyles.divider} />
+        <View style={
+          [
+            itemStyles.container,
+            { marginTop: (hasLastStroked ? CARD_PADDING_V_LAST_STROKED : CARD_PADDING_V) }
+          ]}
+        >
+          {
+            hasLastStroked
+            && (
+            <View style={itemStyles.lastStroked}>
+              <Text style={itemStyles.lastStrokedTex}>
+                {post.lastStroked.text}
+                <SmartMoment style={itemStyles.lastStrokedAt}>{post.lastStroked.at}</SmartMoment>
+              </Text>
+            </View>
+            )
+          }
+          <View style={itemStyles.postMeta}>
+            <View style={itemStyles.postMetaLeft}>
+              <Image source={{ uri: post.user.imageUrl }} style={itemStyles.postMetaUserImage} />
+              <View>
+                <Text style={itemStyles.postMetaUserNickname}>{post.user.nickname}</Text>
+                <SmartMoment style={itemStyles.postMetaCreatedAt}>{post.createdAt}</SmartMoment>
+              </View>
+            </View>
+            <View>
+              <Icon size={15} name={Platform.select({ android: 'md-more', ios: 'ios-more' })} />
+            </View>
+          </View>
+          {
+            !!post.body && post.body.length > 0
+            && (
+              <View>
+                <HTML
+                  html={post.body}
+                  imagesMaxWidth={Dimensions.get('window').width}
+                  ignoredStyles={['display', 'width', 'height', 'font-family']}
+                  containerStyle={itemStyles.postBodyContainer}
+                  baseFontStyle={itemStyles.postBody}
+                />
+              </View>
+            )
+          }
+          <View style={itemStyles.actionButtons}>
+            <View>
+              <View style={commonStyles.flexRow}>
+                <Icon size={15} color={commonColors.alpha50} name={Platform.select({ android: 'md-heart', ios: 'ios-heart' })} />
+                <Text style={itemStyles.actionButton}>
+                  공감
+                  {
+                    post.upvotesCount > 0
+                    && <Text style={itemStyles.actionCount}>{post.upvotesCount}</Text>
+                  }
+                </Text>
+              </View>
+            </View>
+            <View>
+              <View style={commonStyles.flexRow}>
+                <Icon size={15} color={commonColors.alpha50} name={Platform.select({ android: 'md-text', ios: 'ios-text' })} />
+                <Text style={itemStyles.actionButton}>
+                  댓글
+                  {
+                    post.commentsCount > 0
+                    && <Text style={itemStyles.actionCount}>{post.commentsCount}</Text>
+                  }
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
+  renderHeader = () => (
+    <View style={headerStyles.container}>
+      <View style={headerStyles.logoContainer}>
+        <ImageBackground
+          style={headerStyles.logoBackground}
+          resizeMode="cover"
+          source={{ url: this.state.currentChannel.logoUrl }}
+          blurRadius={30}
+        />
+        <View style={headerStyles.logoImageContainer}>
+          <Image
+            source={{ url: this.state.currentChannel.logoUrl }}
+            blurRadius={1}
+            style={headerStyles.logoImage}
+          />
+        </View>
+      </View>
+      <View style={headerStyles.channelMetaContainer}>
+        <Text style={headerStyles.groupTitle}>
+          {this.state.currentChannel.group.title}
+        </Text>
+        <Text style={headerStyles.channleTitle}>
+          {this.state.currentChannel.title}
+        </Text>
+        <View style={headerStyles.actionButtons}>
+          <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-notifications-outline', ios: 'ios-notifications-outline' })} />
+          <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-person-add', ios: 'ios-person-add' })} />
+          <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-open', ios: 'ios-open' })} />
+        </View>
+      </View>
+    </View>
   );
 
-  // renderSectionHeader = ({section: {group}}) => {
-  //   console.log('Section GroupID', group.id)
-  //   return (<GroupSectionHeader group={group} onGroupPressed={this.onGroupPressedHandler} />);
-  // }
-
-  // renderItem = ({item, index, section: {group}}) => {
-  //   return (
-  //     <View
-  //       style={styles.item}
-  //       key={item.key}>
-  //       {
-  //         item.type == "channels" &&
-  //           <ChannelListHorizontal
-  //             itemType={index}
-  //             group={group}
-  //             channels={item.channels}
-  //             hasChannelsJoinable={item.hasChannelsJoinable}
-  //             onPress={this.onChannelPressedHanlder}
-  //           />
-  //       }
-  //       {
-  //         item.type == "category" &&
-  //           <View>
-  //             <View style={{marginTop: 5, paddingTop: 5, paddingBottom: 5, borderBottomColor: '#eee', borderBottomWidth: 1}}>
-  //               <Text style={{fontSize: 14, color: '#777'}}>{item.name}</Text>
-  //             </View>
-  //             <ChannelListHorizontal
-  //               itemType={index}
-  //               group={group}
-  //               channels={item.channels}
-  //               hasChannelsJoinable={item.hasChannelsJoinable}
-  //               onPress={this.onChannelPressedHanlder}
-  //             />
-  //           </View>
-  //       }
-  //     </View>
-  //   );
-  // }
-
   render() {
-    if(!this.state.currentChannel) {
-      let newCountTexts = [];
-      if(this.props.currentUser.newMessagesCount && this.props.currentUser.newMessagesCount > 0) {
-        newCountTexts.push(`새 알림 ${this.props.currentUser.newMessagesCount}개`);
-      }
-      if(this.props.currentUser.newMentionsCount && this.props.currentUser.newMentionsCount > 0) {
-        newCountTexts.push(`새 멘션 ${this.props.currentUser.newMentionsCount}개`);
-      }
-
-      let subWelcome;
-      if(newCountTexts.length > 0) {
-        subWelcome = `${newCountTexts.join(", ")}가 있습니다.`
-      } else {
-        const hours = new Date().getHours();
-        const isDayTime = hours > 3 && hours < 15;
-
-        if(isDayTime) {
-          subWelcome = "멋진 하루 보내세요!";
-        } else {
-          subWelcome = "오늘 하루 어떻게 보내셨나요?";
-        }
-      }
-
+    if (!this.state.currentChannel) {
       return (
-        <Root>
-          <View style={commonStyles.flexCenterContainer}>
-            <Text>어서오세요, {this.props.currentUser.nickname}님!</Text>
-            <Text>{subWelcome}</Text>
-            <Text>오른쪽 상단의 햄버거를 눌러</Text>
-            <Text>그룹과 채널을 선택해 주세요.</Text>
-          </View>
-        </Root>
+        <View style={noCurrentChannelStyles.container}>
+          <Text style={noCurrentChannelStyles.text}>로딩 중...</Text>
+        </View>
       );
     }
 
     return (
-      <Content contentContainerStyle={commonStyles.flexContainer}>
-        <View style={styles.headerContainer}>
-          <Image source={{ url: this.state.currentChannel.logoUrl }} style={{ width: 80, height: 80 }} />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{this.state.currentChannel.title}</Text>
-          </View>
-        </View>
+      <Root>
         <FlatList
-          style={{ width: '100%' }}
           data={this.props.posts}
           renderItem={this.renderPost}
+          ListHeaderComponent={this.renderHeader}
         />
-      </Content>
+      </Root>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  headerContainer: {
+const headerStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+  },
+  logoContainer: {
+    position: 'relative',
+  },
+  logoBackground: {
+    height: 128,
     width: '100%',
+    opacity: 0.6,
+  },
+  logoImageContainer: {
+    position: 'absolute',
+    top: 65,
+    width: '100%',
+    alignItems: 'center',
+  },
+  logoImage: {
+    width: 84,
+    height: 84,
+    borderRadius: 5
+  },
+  channelMetaContainer: {
+    height: 121,
+    marginTop: 25,
+    alignItems: 'center',
+    marginHorizontal: CARD_PADDING_H,
+  },
+  groupTitle: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: commonColors.darkGray,
+  },
+  channleTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#111'
+  },
+  actionButtons: {
+    marginVertical: 20,
     flexDirection: 'row',
-    paddingTop: 50,
-    paddingBottom: 50,
-    paddingLeft: 10,
-    paddingRight: 10,
-    backgroundColor: "#eee"
+    justifyContent: 'space-between',
+    width: 130
+  }
+});
+
+const itemStyles = StyleSheet.create({
+  divider: {
+    height: 8,
+    backgroundColor: commonColors.alpha10,
+  },
+  container: {
+    paddingBottom: 12,
+  },
+  lastStroked: {
+    fontSize: 14,
+    marginBottom: CARD_PADDING_V_LAST_STROKED,
+    marginHorizontal: CARD_PADDING_H,
+    borderRadius: 5,
+    backgroundColor: commonColors.lightGray,
+    padding: CARD_PADDING_V_LAST_STROKED,
+  },
+  lastStrokedTex: {
+    color: commonColors.darkGray,
+  },
+  lastStrokedAt: {
+    marginLeft: 4,
+    color: commonColors.darkGray,
+  },
+  postMeta: {
+    marginBottom: 8,
+    marginHorizontal: CARD_PADDING_H,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  postMetaLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  postMetaUserImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 8
+  },
+  postMetaUserNickname: {
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  postMetaCreatedAt: {
+    color: commonColors.alpha34,
+    fontSize: 14
+  },
+  postBodyContainer: {
+    paddingLeft: CARD_PADDING_H,
+    paddingRight: CARD_PADDING_H
+  },
+  postBody: {
+    fontSize: 16,
+  },
+  actionButtons: {
+    marginTop: 8,
+    marginHorizontal: CARD_PADDING_H,
+    flexDirection: 'row'
+  },
+  actionButton: {
+    marginLeft: 5,
+    marginRight: 15,
+    color: commonColors.alpha50,
+  },
+  actionCount: {
+    marginLeft: 8,
+    color: commonColors.alpha50,
   },
 });
 
-const mapStateToProps = state => {
-  return {
-    posts: state.channel.posts,
-    currentUser: state.currentUser,
-    selectedGroup: state.home.selectedGroup,
-    selectedChannel: state.home.selectedChannel,
-    homeActiveDrawer: state.ui.homeActiveDrawer,
-    //homeGroups: homeGroupsSelector(state),
-    // isLoading: state.ui.isLoading
+const noCurrentChannelStyles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    textAlign: 'center',
+    margin: 30
   }
-};
+});
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onSignOut: () => dispatch(authSignOut()),
-    // onSelectGroup: (group) => dispatch(homeSelectGroup(group)),
-    // onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
-    onClearAll: () => dispatch(channelClearAll()),
-    onLoadMorePosts: (channel) => dispatch(channelLoadMorePostsRequested(channel)),
-  };
-};
+const mapStateToProps = state => ({
+  posts: state.channel.posts,
+  currentUser: state.currentUser,
+  selectedGroup: state.home.selectedGroup,
+  selectedChannel: state.home.selectedChannel,
+  homeActiveDrawer: state.ui.homeActiveDrawer,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onSignOut: () => dispatch(authSignOut()),
+  onClearAll: () => dispatch(channelClearAll()),
+  onLoadMorePosts: channel => dispatch(channelLoadMorePostsRequested(channel)),
+});
 
 export default requiredCurrentUser(connect(mapStateToProps, mapDispatchToProps)(ChannelScreen));

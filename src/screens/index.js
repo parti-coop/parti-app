@@ -47,19 +47,12 @@ const registerScreens = (store, provider) => {
     provider, store
   );
   Navigation.registerComponentWithRedux(
-    'Drawer', () => require('./DrawerScreen').default,
-    provider, store
-  );
-  Navigation.registerComponentWithRedux(
-    'Group', () => require('./GroupScreen').default,
-    provider, store
-  );
-  Navigation.registerComponentWithRedux(
     'Home', () => require('./HomeScreen').default,
     provider, store
   );
-  Navigation.registerComponent(
-    'HomeTopBarBackground', () => require('./HomeTopBarBackgroundScreen').default
+  Navigation.registerComponentWithRedux(
+    'ChannelTopBarTitle', () => require('./ChannelTopBarTitleScreen').default,
+    provider, store
   );
 };
 

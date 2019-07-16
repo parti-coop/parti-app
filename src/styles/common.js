@@ -10,5 +10,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  flexRow: {
+    flexDirection: 'row'
+  },
 });

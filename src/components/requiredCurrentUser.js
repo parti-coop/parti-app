@@ -1,26 +1,28 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 import { currentUserLoadInfoRequested } from '../store/effects';
 import { goToAuthRoot } from '../screens/routes';
 
+
 export default function (ComposedComponent) {
   class RequiredCurrentUser extends Component {
+
     constructor(props) {
       super(props);
-      let isAuthenticated = this._checkAndRedirect()
-      if(isAuthenticated) {
+      const isAuthenticated = this.checkAndRedirect()
+      if (isAuthenticated) {
         this.props.onCurrentUserLoadInfo();
       }
     }
 
     componentDidUpdate() {
-      this._checkAndRedirect();
+      this.checkAndRedirect();
     }
 
-    _checkAndRedirect() {
-      const { isAuthenticated, redirect } = this.props;
+    checkAndRedirect = () => {
+      const { isAuthenticated } = this.props;
 
       if (!isAuthenticated) {
         goToAuthRoot();
@@ -38,19 +40,13 @@ export default function (ComposedComponent) {
     }
   }
 
-  const mapStateToProps = state => {
-    return {
-      isAuthenticated: state.accessToken.isAuthenticated
-    }
-  };
+  const mapStateToProps = state => ({
+    isAuthenticated: state.accessToken.isAuthenticated
+  });
 
-  const mapDispatchToProps = dispatch => {
-    return {
-      onCurrentUserLoadInfo: () => dispatch(currentUserLoadInfoRequested()),
-    }
-  };
+  const mapDispatchToProps = dispatch => ({
+    onCurrentUserLoadInfo: () => dispatch(currentUserLoadInfoRequested()),
+  });
 
   return connect(mapStateToProps, mapDispatchToProps)(RequiredCurrentUser);
 }
-
-

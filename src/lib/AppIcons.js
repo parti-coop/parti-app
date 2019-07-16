@@ -18,6 +18,8 @@ const loadIcons = async () => {
   loadedIconsMap.search = await loadIcon('search', 30);
   loadedIconsMap.notifications = await loadIcon('notifications', 30);
   loadedIconsMap.more = await loadIcon('more', 30);
+  // eslint-disable-next-line global-require
+  loadedIconsMap.logo = require('../res/images/logo.png');
 };
 
 export { loadedIconsMap, loadIcons };
