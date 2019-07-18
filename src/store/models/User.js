@@ -25,21 +25,22 @@ class User extends ValidatingModel {
     return this.upsert(data);
   }
 
-  static reducer(action, User, session) {
-    switch(action.type){
+  static reducer(action, SessionSpecificUser) {
+    switch (action.type) {
       case CHANNELS_LOAD_POSTS_RESPONDED:
         action.posts?.reduce((fetchingUsers, post) => {
-          if(!post.user) { return }
-          const exists = fetchingUsers.some((fetchingUser) => {
-            fetchingUser.id === post.user?.id
-          });
-          if(exists) { return }
+          if (!post.user) { return fetchingUsers; }
+
+          const exists = fetchingUsers.some(fetchingUser => fetchingUser.id === post.user?.id);
+          if (exists) { return fetchingUsers; }
 
           fetchingUsers.push(post.user);
           return fetchingUsers;
         }, []).map((user) => {
-          User.parse(user);
+          SessionSpecificUser.parse(user);
         });
+        break;
+      default:
         break;
     }
   }

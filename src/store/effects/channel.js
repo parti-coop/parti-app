@@ -1,40 +1,42 @@
 import queryString from 'query-string';
-import moment from 'moment';
 
 import API from './api';
-import { channelLoadPostsResponded, channelLoadPostsSucceeded } from '../actions';
+import {
+  channelLoadPostsResponded, channelLoadPostsSucceeded,
+  channelStopLoading, channelStartLoading,
+} from '../actions';
 import { uiShowError } from './ui';
-import { channelPostsForceSelector } from '../selectors/channel';
 
 // eslint-disable-next-line import/prefer-default-export
 export const channelLoadMorePostsRequested = channel => async (dispatch, getState) => {
+  dispatch(channelStartLoading(channel));
   try {
     let afterDateTime = null;
-
     const params = { channel_id: channel.id };
-    if (channel.id === getState().channel.selectedChannel?.id) {
-      const [lastPost] = getState().channel.posts.slice(-1);
-      afterDateTime = lastPost?.lastStroked?.at;
-      if (afterDateTime) {
-        params.before_date_time = moment(afterDateTime).format('YYYY-MM-DDTHH:mm:ssZ');
-      }
+    const [lastPost] = getState().channel.responsePosts[channel?.id]?.slice(-1) || [];
+    afterDateTime = lastPost?.lastStrokedAt;
+    if (afterDateTime) {
+      params.last_stroked_at = Date.parse(afterDateTime) / 1000;
     }
 
     const res = await API(dispatch, `/posts?${queryString.stringify(params)}`);
     if (!res || !res?.posts) {
+      // eslint-disable-next-line no-console
       console.log('Error on channelLoadPosts');
       dispatch(uiShowError());
       return;
     }
-
-    let selectedPosts = [];
     if (res.posts.length > 0) {
       await dispatch(channelLoadPostsResponded(res.posts));
-      selectedPosts = channelPostsForceSelector(getState(), res.posts.map(post => post.id));
+      const responsePosts = res.posts
+        .map(post => ({ id: post.id, lastStrokedAt: post.lastStroked.at }));
+      const noMoreData = res.isLastPage;
+      dispatch(channelLoadPostsSucceeded(channel, responsePosts, noMoreData, afterDateTime));
     }
-    dispatch(channelLoadPostsSucceeded(channel, selectedPosts, afterDateTime));
   } catch (err) {
-    console.log(err);
+    // eslint-disable-next-line no-console
+    console.warn('channelLoadMorePostsRequested ERROR', err);
     dispatch(uiShowError(err));
   }
+  dispatch(channelStopLoading(channel));
 };

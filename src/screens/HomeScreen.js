@@ -119,7 +119,7 @@ class HomeScreen extends Component {
 
   channelPressedHanlder = async (group, channel) => {
     await this.props.onSelectChannel(group, channel);
-    goToHomeRootChannel();
+    goToHomeRootChannel(channel);
   };
 
   renderSectionHeader = ({ section: { group } }) => {
@@ -297,7 +297,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onSignOut: () => dispatch(authSignOut()),
-  // onSelectGroup: group => dispatch(homeSelectGroup(group)),
   onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
   onLoadGroups: () => dispatch(homeLoadGroupsRequested()),
 });

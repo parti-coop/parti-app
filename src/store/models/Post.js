@@ -1,5 +1,4 @@
-import { PropTypes } from 'React';
-import { Model, fk, many, attr } from 'redux-orm';
+import { Model, fk, attr } from 'redux-orm';
 import propTypesMixin from 'redux-orm-proptypes';
 
 import { CHANNELS_LOAD_POSTS_RESPONDED } from '../actionTypes';
@@ -34,23 +33,24 @@ class Post extends ValidatingModel {
   }
 
   static parse(data) {
-
     return this.upsert({
       ...data,
       createdAt: Date.parse(data.createdAt),
       lastStroked: {
-        ... data.lastStroked,
+        ...data.lastStroked,
         at: Date.parse(data.lastStroked.at)
       }
     });
   }
 
-  static reducer(action, Post, session) {
-    switch(action.type){
+  static reducer(action, SesstionSpecificPost) {
+    switch (action.type) {
       case CHANNELS_LOAD_POSTS_RESPONDED:
         action.posts?.map((post) => {
-          Post.parse(post);
+          SesstionSpecificPost.parse(post);
         });
+        break;
+      default:
         break;
     }
   }

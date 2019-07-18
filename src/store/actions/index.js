@@ -4,4 +4,7 @@ export {
 } from './ui';
 export { currentUserLoadInfoResponded, currentUserClearAll } from './currentUser';
 export { homeSelectGroup, homeSelectChannel, homeLoadGroupsResponded } from './home';
-export { channelLoadPostsResponded, channelLoadPostsSucceeded, channelClearAll } from './channel';
+export {
+  channelLoadPostsResponded, channelLoadPostsSucceeded, channelClearAll,
+  channelStartLoading, channelStopLoading
+} from './channel';

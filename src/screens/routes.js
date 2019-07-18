@@ -137,10 +137,13 @@ export const goToHomeRoot = () => Navigation.setRoot({
   },
 });
 
-export const goToHomeRootChannel = () => Navigation.push(
+export const goToHomeRootChannel = channel => Navigation.push(
   NAV_ID_HOME, {
     component: {
       name: 'Channel',
+      passProps: {
+        currentChannel: channel,
+      },
     },
   },
 );

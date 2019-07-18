@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
-  View, FlatList, Image, StyleSheet, Platform, Dimensions, ImageBackground
+  View, FlatList, Image, StyleSheet, Platform,
+  Dimensions, ImageBackground, ActivityIndicator
 } from 'react-native';
 import {
   Root, Text
@@ -10,7 +11,7 @@ import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HTML from 'react-native-render-html';
 
-import { channelClearAll } from '../store/actions';
+import { channelPostsSelector } from '../store/selectors/channel';
 import { authSignOut, channelLoadMorePostsRequested } from '../store/effects';
 import requiredCurrentUser from '../components/requiredCurrentUser';
 import { loadedIconsMap } from '../lib/AppIcons';
@@ -18,45 +19,37 @@ import commonColors from '../styles/colors';
 import commonStyles from '../styles/common';
 import SmartMoment from '../components/SmartMoment';
 
-
 const BUTTON_ID_SEARCH = 'BUTTON_ID_SEARCH';
 const CARD_PADDING_H = 16;
 const CARD_PADDING_V = 12;
 const CARD_PADDING_V_LAST_STROKED = 8;
 
 class ChannelScreen extends Component {
-  state = {
-    currentChannel: null,
-  };
-
   constructor(props) {
     super(props);
 
     this.setNavigationOptions();
     this.navButtonListener = Navigation.events()
       .registerNavigationButtonPressedListener(this.navigationButtonPressedHandler);
-
-    if (this.props.selectedChannel) {
-      this.props.onClearAll();
-      this.props.onLoadMorePosts(this.props.selectedChannel);
-    }
   }
 
   componentDidMount() {
-    this.setState({
-      currentChannel: this.props.selectedChannel,
-    }, () => {
-      Navigation.mergeOptions(this.props.componentId, {
-        topBar: {
-          title: {
-            component: {
-              passProps: {
-                channel: this.state.currentChannel,
-              },
-            }
-          },
-        }
-      });
+    if (!this.props.currentChannel) {
+      return;
+    }
+
+    this.props.onLoadMorePosts(this.props.currentChannel);
+
+    Navigation.mergeOptions(this.props.componentId, {
+      topBar: {
+        title: {
+          component: {
+            passProps: {
+              channel: this.props.currentChannel,
+            },
+          }
+        },
+      }
     });
   }
 
@@ -90,6 +83,22 @@ class ChannelScreen extends Component {
   navigationButtonPressedHandler = () => {
     alert('개발 중입니다');
   };
+
+  loadMoreData = () => {
+    if (this.props.noMoreData) {
+      return;
+    }
+    this.props.onLoadMorePosts(this.props.currentChannel);
+  }
+
+  renderFooter = () => (
+    this.props.isLoading
+      ? (
+        <View style={indicatorStyles.container}>
+          <ActivityIndicator style={indicatorStyles.indicator} />
+        </View>
+      ) : null
+  );
 
   renderPost = ({ item: post }) => {
     const hasLastStroked = !!post.lastStroked?.text && !!post.lastStroked?.at;
@@ -177,12 +186,12 @@ class ChannelScreen extends Component {
         <ImageBackground
           style={headerStyles.logoBackground}
           resizeMode="cover"
-          source={{ url: this.state.currentChannel.logoUrl }}
+          source={{ url: this.props.currentChannel.logoUrl }}
           blurRadius={30}
         />
         <View style={headerStyles.logoImageContainer}>
           <Image
-            source={{ url: this.state.currentChannel.logoUrl }}
+            source={{ url: this.props.currentChannel.logoUrl }}
             blurRadius={1}
             style={headerStyles.logoImage}
           />
@@ -190,10 +199,10 @@ class ChannelScreen extends Component {
       </View>
       <View style={headerStyles.channelMetaContainer}>
         <Text style={headerStyles.groupTitle}>
-          {this.state.currentChannel.group.title}
+          {this.props.currentChannel.group.title}
         </Text>
         <Text style={headerStyles.channleTitle}>
-          {this.state.currentChannel.title}
+          {this.props.currentChannel.title}
         </Text>
         <View style={headerStyles.actionButtons}>
           <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-notifications-outline', ios: 'ios-notifications-outline' })} />
@@ -205,10 +214,10 @@ class ChannelScreen extends Component {
   );
 
   render() {
-    if (!this.state.currentChannel) {
+    if (!this.props.currentChannel) {
       return (
         <View style={noCurrentChannelStyles.container}>
-          <Text style={noCurrentChannelStyles.text}>로딩 중...</Text>
+          <Text style={noCurrentChannelStyles.text}>채널을 선택해 주세요.</Text>
         </View>
       );
     }
@@ -219,6 +228,10 @@ class ChannelScreen extends Component {
           data={this.props.posts}
           renderItem={this.renderPost}
           ListHeaderComponent={this.renderHeader}
+          ListFooterComponent={this.renderFooter}
+          onEndReached={this.loadMoreData}
+          extraData={this.props.isLoading}
+          onEndReachedThreshold={30}
         />
       </Root>
     );
@@ -355,17 +368,25 @@ const noCurrentChannelStyles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => ({
-  posts: state.channel.posts,
-  currentUser: state.currentUser,
-  selectedGroup: state.home.selectedGroup,
-  selectedChannel: state.home.selectedChannel,
-  homeActiveDrawer: state.ui.homeActiveDrawer,
+const indicatorStyles = StyleSheet.create({
+  container: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  indicator: {
+    height: 45,
+  },
 });
 
+const mapStateToProps = (state, props) => ({
+  posts: channelPostsSelector(state, props.currentChannel),
+  noMoreData: state.channel.noMoreData?.[props.currentChannel?.id],
+  isLoading: state.channel.isLoading?.[props.currentChannel?.id],
+  currentUser: state.currentUser,
+  homeActiveDrawer: state.ui.homeActiveDrawer,
+});
 const mapDispatchToProps = dispatch => ({
   onSignOut: () => dispatch(authSignOut()),
-  onClearAll: () => dispatch(channelClearAll()),
   onLoadMorePosts: channel => dispatch(channelLoadMorePostsRequested(channel)),
 });
 
