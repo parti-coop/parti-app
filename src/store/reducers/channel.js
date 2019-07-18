@@ -7,7 +7,7 @@ import {
 const initialState = {
   responsePosts: {},
   noMoreData: {},
-  isLoading: {}
+  isLoading: {},
 };
 
 const loadPostsSucceeded = (state, action) => {

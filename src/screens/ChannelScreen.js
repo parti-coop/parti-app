@@ -25,8 +25,14 @@ const CARD_PADDING_V = 12;
 const CARD_PADDING_V_LAST_STROKED = 8;
 
 class ChannelScreen extends Component {
+  state = {
+    isExpandedHeader: false,
+    isExpanding: false,
+  };
+
   constructor(props) {
     super(props);
+    this.flatListRef = React.createRef();
 
     this.setNavigationOptions();
     this.navButtonListener = Navigation.events()
@@ -46,6 +52,7 @@ class ChannelScreen extends Component {
           component: {
             passProps: {
               channel: this.props.currentChannel,
+              onTitlePressed: this.handleTopBarTitlePressed,
             },
           }
         },
@@ -91,6 +98,19 @@ class ChannelScreen extends Component {
     this.props.onLoadMorePosts(this.props.currentChannel);
   }
 
+  handleTopBarTitlePressed = () => {
+    this.flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
+    this.setState(prevSatate => ({
+      isExpandedHeader: !prevSatate.isExpandedHeader
+    }));
+  }
+
+  handleMomentumScrollBegin = () => {
+    this.setState({
+      isExpandedHeader: false
+    });
+  }
+
   renderFooter = () => (
     this.props.isLoading
       ? (
@@ -105,7 +125,6 @@ class ChannelScreen extends Component {
 
     return (
       <View>
-        <View style={itemStyles.divider} />
         <View style={
           [
             itemStyles.container,
@@ -176,41 +195,48 @@ class ChannelScreen extends Component {
             </View>
           </View>
         </View>
+        <View style={itemStyles.divider} />
       </View>
     );
   }
 
   renderHeader = () => (
-    <View style={headerStyles.container}>
-      <View style={headerStyles.logoContainer}>
-        <ImageBackground
-          style={headerStyles.logoBackground}
-          resizeMode="cover"
-          source={{ url: this.props.currentChannel.logoUrl }}
-          blurRadius={30}
-        />
-        <View style={headerStyles.logoImageContainer}>
-          <Image
-            source={{ url: this.props.currentChannel.logoUrl }}
-            blurRadius={1}
-            style={headerStyles.logoImage}
-          />
+    this.state.isExpandedHeader
+      ? (
+        <View>
+          <View style={headerStyles.container}>
+            <View style={headerStyles.logoContainer}>
+              <ImageBackground
+                style={headerStyles.logoBackground}
+                resizeMode="cover"
+                source={{ url: this.props.currentChannel.logoUrl }}
+                blurRadius={30}
+              />
+              <View style={headerStyles.logoImageContainer}>
+                <Image
+                  source={{ url: this.props.currentChannel.logoUrl }}
+                  blurRadius={1}
+                  style={headerStyles.logoImage}
+                />
+              </View>
+            </View>
+            <View style={headerStyles.channelMetaContainer}>
+              <Text style={headerStyles.groupTitle}>
+                {this.props.currentChannel.group.title}
+              </Text>
+              <Text style={headerStyles.channleTitle}>
+                {this.props.currentChannel.title}
+              </Text>
+              <View style={headerStyles.actionButtons}>
+                <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-notifications-outline', ios: 'ios-notifications-outline' })} />
+                <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-person-add', ios: 'ios-person-add' })} />
+                <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-open', ios: 'ios-open' })} />
+              </View>
+            </View>
+          </View>
+          <View style={itemStyles.divider} />
         </View>
-      </View>
-      <View style={headerStyles.channelMetaContainer}>
-        <Text style={headerStyles.groupTitle}>
-          {this.props.currentChannel.group.title}
-        </Text>
-        <Text style={headerStyles.channleTitle}>
-          {this.props.currentChannel.title}
-        </Text>
-        <View style={headerStyles.actionButtons}>
-          <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-notifications-outline', ios: 'ios-notifications-outline' })} />
-          <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-person-add', ios: 'ios-person-add' })} />
-          <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-open', ios: 'ios-open' })} />
-        </View>
-      </View>
-    </View>
+      ) : null
   );
 
   render() {
@@ -225,13 +251,16 @@ class ChannelScreen extends Component {
     return (
       <Root>
         <FlatList
+          ref={this.flatListRef}
           data={this.props.posts}
           renderItem={this.renderPost}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
           onEndReached={this.loadMoreData}
-          extraData={this.props.isLoading}
-          onEndReachedThreshold={30}
+          extraData={[this.props.isLoading, this.state.isExpandedHeader]}
+          onEndReachedThreshold={60}
+          scrollEventThrottle={16}
+          onMomentumScrollBegin={this.handleMomentumScrollBegin}
         />
       </Root>
     );

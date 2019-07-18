@@ -1,24 +1,30 @@
 import React, { PureComponent } from 'react';
 import {
-  View, StyleSheet, Text, Platform
+  View, StyleSheet, Text, Platform, TouchableOpacity
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 class ChannelTopBarTitleScreen extends PureComponent {
+  handleTitlePressed = () => {
+    this.props.onTitlePressed();
+  };
+
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.titleContainer}>
-          <Text numberOfLines={1}>{this.props.channel?.title || '채널'}</Text>
-          <View style={styles.iconContainer}>
-            <Icon
-              size={16}
-              color="#ccc"
-              name={Platform.select({ android: 'md-arrow-down', ios: 'ios-arrow-down' })}
-              style={styles.icon}
-            />
+        <TouchableOpacity onPress={this.handleTitlePressed}>
+          <View style={styles.titleContainer}>
+            <Text numberOfLines={1}>{this.props.channel?.title || '채널'}</Text>
+            <View style={styles.iconContainer}>
+              <Icon
+                size={16}
+                color="#ccc"
+                name={Platform.select({ android: 'md-arrow-down', ios: 'ios-arrow-down' })}
+                style={styles.icon}
+              />
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     );
   }
