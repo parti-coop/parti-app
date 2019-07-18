@@ -3,7 +3,9 @@ export {
   uiStartLoading, uiStopLoading, uiHomeActiveDrawer, uiHomeInactiveDrawer
 } from './ui';
 export { currentUserLoadInfoResponded, currentUserClearAll } from './currentUser';
-export { homeSelectGroup, homeSelectChannel, homeLoadGroupsResponded } from './home';
+export {
+  homeLoadGroupsResponded, homeStartLoading, homeStopLoading
+} from './home';
 export {
   channelLoadPostsResponded, channelLoadPostsSucceeded, channelClearAll,
   channelStartLoading, channelStopLoading

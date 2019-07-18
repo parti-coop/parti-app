@@ -137,7 +137,8 @@ class HomeScreen extends Component {
 
   renderItem = ({ item, section: { group } }) => {
     const isCategory = Object.prototype.hasOwnProperty.call(item, 'channels');
-    const isExpanded = this.state.expandedGroupIds.includes(group.id) || item.isUnread;
+    const isExpanded = !this.props.isLoading
+      && (this.state.expandedGroupIds.includes(group.id) || item.isUnread);
 
     let content;
     if (isCategory) {
@@ -231,7 +232,7 @@ class HomeScreen extends Component {
           renderItem={this.renderItem}
           renderSectionHeader={this.renderSectionHeader}
           ListHeaderComponent={this.renderHeader}
-          extraData={this.state}
+          extraData={[this.state.expandedGroupIds, this.props.isLoading]}
         />
       </Root>
     );
@@ -293,6 +294,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
   currentUser: state.currentUser,
   homeGroups: homeGroupsSelector(state),
+  isLoading: state.home.isLoading,
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,23 +1,22 @@
-import { HOME_SELECT_GROUP, HOME_SELECT_CHANNEL } from '../actionTypes';
+import {
+  HOME_START_LOADING, HOME_STOP_LOADING,
+} from '../actionTypes';
 
 const initialState = {
-  selectedGroup: null,
-  selectedChannel: null,
+  isLoading: false,
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case HOME_SELECT_GROUP:
+    case HOME_START_LOADING:
       return {
         ...state,
-        selectedGroup: action.group,
-        selectedChannel: null,
+        isLoading: true,
       };
-    case HOME_SELECT_CHANNEL:
+    case HOME_STOP_LOADING:
       return {
         ...state,
-        selectedGroup: action.group,
-        selectedChannel: action.channel
+        isLoading: false,
       };
     default:
       return state;

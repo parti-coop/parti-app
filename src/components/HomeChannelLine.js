@@ -10,6 +10,7 @@ class HomeChannelLine extends PureComponent {
 
   render() {
     const logoHeight = this.props.isExpanded ? LOGO_SIZE : 0;
+    const newBadgeContainerHeight = this.props.isExpanded ? null : 0;
     return (
       <TouchableOpacity onPress={this.channelPressedHandler}>
         <View style={styles.container}>
@@ -27,7 +28,7 @@ class HomeChannelLine extends PureComponent {
             {
               this.props.channel.isUnread
               && (
-                <View style={styles.newBadgeContainer}>
+                <View style={[styles.newBadgeContainer, { height: newBadgeContainerHeight }]}>
                   <Text style={styles.newBadge}>N</Text>
                 </View>
               )
