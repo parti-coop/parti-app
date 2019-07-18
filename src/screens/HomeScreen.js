@@ -8,7 +8,6 @@ import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { homeSelectChannel } from '../store/actions';
 import { authSignOut, homeLoadGroupsRequested } from '../store/effects';
 import requiredCurrentUser from '../components/requiredCurrentUser';
 import { goToHomeRootChannel } from './routes';
@@ -118,7 +117,6 @@ class HomeScreen extends Component {
   };
 
   channelPressedHanlder = async (group, channel) => {
-    await this.props.onSelectChannel(group, channel);
     goToHomeRootChannel(channel);
   };
 
@@ -137,8 +135,8 @@ class HomeScreen extends Component {
 
   renderItem = ({ item, section: { group } }) => {
     const isCategory = Object.prototype.hasOwnProperty.call(item, 'channels');
-    const isExpanded = !this.props.isLoading
-      && (this.state.expandedGroupIds.includes(group.id) || item.isUnread);
+    const isExpanded = this.state.expandedGroupIds.includes(group.id)
+      || (!this.props.isLoading && item.isUnread);
 
     let content;
     if (isCategory) {
@@ -299,7 +297,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onSignOut: () => dispatch(authSignOut()),
-  onSelectChannel: (group, channel) => dispatch(homeSelectChannel(group, channel)),
   onLoadGroups: () => dispatch(homeLoadGroupsRequested()),
 });
 

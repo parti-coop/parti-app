@@ -15,6 +15,7 @@ class ChannelTopBarTitleScreen extends PureComponent {
               size={16}
               color="#ccc"
               name={Platform.select({ android: 'md-arrow-down', ios: 'ios-arrow-down' })}
+              style={styles.icon}
             />
           </View>
         </View>
@@ -40,6 +41,9 @@ const styles = StyleSheet.create({
     top: 0,
     height: '100%',
     justifyContent: 'center',
+  },
+  icon: {
+    flex: 1,
   },
 });
 

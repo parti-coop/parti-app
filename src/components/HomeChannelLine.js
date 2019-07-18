@@ -3,6 +3,8 @@ import {
   View, Image, Text, TouchableOpacity, StyleSheet
 } from 'react-native';
 
+import withPreventDoubleClick from './withPreventDoubleClick';
+
 const LOGO_SIZE = 20;
 
 class HomeChannelLine extends PureComponent {
@@ -11,8 +13,10 @@ class HomeChannelLine extends PureComponent {
   render() {
     const logoHeight = this.props.isExpanded ? LOGO_SIZE : 0;
     const newBadgeContainerHeight = this.props.isExpanded ? null : 0;
+
+    const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
     return (
-      <TouchableOpacity onPress={this.channelPressedHandler}>
+      <TouchableOpacityEx onPress={this.channelPressedHandler}>
         <View style={styles.container}>
           <Image
             source={{ url: this.props.channel.logoUrl }}
@@ -35,7 +39,7 @@ class HomeChannelLine extends PureComponent {
             }
           </View>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacityEx>
     );
   }
 }
