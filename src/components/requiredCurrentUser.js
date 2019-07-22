@@ -8,10 +8,9 @@ import { goToAuthRoot } from '../screens/routes';
 
 export default function (ComposedComponent) {
   class RequiredCurrentUser extends Component {
-
     constructor(props) {
       super(props);
-      const isAuthenticated = this.checkAndRedirect()
+      const isAuthenticated = this.checkAndRedirect();
       if (isAuthenticated) {
         this.props.onCurrentUserLoadInfo();
       }

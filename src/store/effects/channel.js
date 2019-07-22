@@ -22,7 +22,7 @@ export const channelLoadMorePostsRequested = channel => async (dispatch, getStat
     const res = await API(dispatch, `/posts?${queryString.stringify(params)}`);
     if (!res || !res?.posts) {
       // eslint-disable-next-line no-console
-      console.log('Error on channelLoadPosts');
+      console.warn('Error on channelLoadPosts');
       dispatch(uiShowError());
       return;
     }

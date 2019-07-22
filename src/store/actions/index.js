@@ -8,5 +8,5 @@ export {
 } from './home';
 export {
   channelLoadPostsResponded, channelLoadPostsSucceeded, channelClearAll,
-  channelStartLoading, channelStopLoading
+  channelStartLoading, channelStopLoading,
 } from './channel';

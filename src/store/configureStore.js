@@ -3,7 +3,7 @@ import {
 } from 'redux';
 import thunk from 'redux-thunk';
 import { createReducer } from 'redux-orm';
-import { createLogger } from 'redux-logger';
+// import { createLogger } from 'redux-logger';
 import { persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -30,10 +30,10 @@ if (__DEV__) {
   composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 }
 
-const logger = createLogger({
-  // eslint-disable-next-line no-undef
-  level: (__DEV__ ? 'log' : 'error')
-});
+// const logger = createLogger({
+//   // eslint-disable-next-line no-undef
+//   level: (__DEV__ ? 'log' : 'error')
+// });
 
 const persistConfig = {
   key: 'root6',
@@ -49,6 +49,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const configureStore = () => {
   return createStore(persistedReducer,
-    composeEnhancers(applyMiddleware(thunk, logger)));
+    composeEnhancers(applyMiddleware(
+      thunk,
+      // logger
+    )));
 };
 export default configureStore;

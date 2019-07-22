@@ -3,9 +3,11 @@
   "parser": "babel-eslint",
   "env": {
     "jest": true,
+    "react-native-globals/all": true,
   },
   "plugins": [
-    "babel"
+    "babel",
+    "react-native-globals"
   ],
   "rules": {
     "no-use-before-define": "off",

@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
-import { connect } from "react-redux";
-import { Platform, View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { connect } from 'react-redux';
+import {
+  View, Text, StyleSheet, ActivityIndicator
+} from 'react-native';
 import { Button, Form, Item } from 'native-base';
 
-import { authSignIn } from "../../store/effects";
-import BasicInput from "../../components/BasicInput";
+import { authSignIn } from '../../store/effects';
+import BasicInput from '../../components/BasicInput';
 
 class EmailSignInScreen extends Component {
   state = {
     controls: {
       email: {
-        value: ""
+        value: ''
       },
       password: {
-        value: ""
+        value: ''
       }
     }
   };
@@ -28,17 +30,15 @@ class EmailSignInScreen extends Component {
   }
 
   updateInputState = (key, value) => {
-    this.setState(prevState => {
-      return {
-        controls: {
-          ...prevState.controls,
-          [key]: {
-            ...prevState.controls[key],
-            value: value
-          }
+    this.setState(prevState => ({
+      controls: {
+        ...prevState.controls,
+        [key]: {
+          ...prevState.controls[key],
+          value
         }
-      };
-    });
+      }
+    }));
   };
 
   render() {
@@ -50,24 +50,28 @@ class EmailSignInScreen extends Component {
               placeholder="이메일"
               keyboardType="email-address"
               value={this.state.controls.email.value}
-              onChangeText={val => this.updateInputState("email", val)}/>
+              onChangeText={val => this.updateInputState('email', val)}
+            />
           </Item>
           <Item>
             <BasicInput
               placeholder="비밀번호"
               value={this.state.controls.password.value}
-              onChangeText={val => this.updateInputState("password", val)}
-              secureTextEntry/>
+              onChangeText={val => this.updateInputState('password', val)}
+              secureTextEntry
+            />
           </Item>
           <View style={styles.signInControlContainer}>
-            { this.props.isLoading ?
-              (
+            { this.props.isLoading
+              ? (
                 <ActivityIndicator style={styles.signInIndicator} />
               )
-              :
-              (
-                <Button primary style={styles.signInButton}
-                  onPress={this.signInHandler}>
+              : (
+                <Button
+                  primary
+                  style={styles.signInButton}
+                  onPress={this.signInHandler}
+                >
                   <Text style={styles.signInButtonText}>로그인</Text>
                 </Button>
               )
@@ -107,16 +111,12 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => {
-  return {
-    isLoading: state.ui.isLoading
-  };
-};
+const mapStateToProps = state => ({
+  isLoading: state.ui.isLoading
+});
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onSignIn: (authData) => dispatch(authSignIn(authData))
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  onSignIn: authData => dispatch(authSignIn(authData))
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(EmailSignInScreen);

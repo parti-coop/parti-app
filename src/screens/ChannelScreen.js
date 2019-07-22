@@ -27,7 +27,6 @@ const CARD_PADDING_V_LAST_STROKED = 8;
 class ChannelScreen extends Component {
   state = {
     isExpandedHeader: false,
-    isExpanding: false,
   };
 
   constructor(props) {
@@ -43,7 +42,6 @@ class ChannelScreen extends Component {
     if (!this.props.currentChannel) {
       return;
     }
-
     this.props.onLoadMorePosts(this.props.currentChannel);
 
     Navigation.mergeOptions(this.props.componentId, {
@@ -93,6 +91,9 @@ class ChannelScreen extends Component {
 
   loadMoreData = () => {
     if (this.props.noMoreData) {
+      return;
+    }
+    if (this.props.isLoading) {
       return;
     }
     this.props.onLoadMorePosts(this.props.currentChannel);
@@ -258,7 +259,7 @@ class ChannelScreen extends Component {
           ListFooterComponent={this.renderFooter}
           onEndReached={this.loadMoreData}
           extraData={[this.props.isLoading, this.state.isExpandedHeader]}
-          onEndReachedThreshold={60}
+          onEndReachedThreshold={100}
           scrollEventThrottle={16}
           onMomentumScrollBegin={this.handleMomentumScrollBegin}
         />

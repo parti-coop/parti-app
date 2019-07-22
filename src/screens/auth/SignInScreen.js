@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { connect } from "react-redux";
-import { Platform, View, Text, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
+import {
+  Platform, View, Text, StyleSheet
+} from 'react-native';
 import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { LoginManager, AccessToken } from "react-native-fbsdk";
+import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import { goToAuthRootEmailSignIn, goToAuthRootSignUp } from '../../screens/routes';
-import BasicInput from "../../components/BasicInput";
-import { authSignIn } from "../../store/effects";
+import { goToAuthRootEmailSignIn, goToAuthRootSignUp } from '../routes';
+import { authSignIn } from '../../store/effects';
 
 class SignInScreen extends Component {
   goToSignUpHandler = () => {
@@ -29,16 +30,17 @@ class SignInScreen extends Component {
 
   facebookSignInHandler = async () => {
     try {
-      let result = await LoginManager.logInWithReadPermissions(["email"]);
+      const result = await LoginManager.logInWithReadPermissions(['email']);
       if (result.isCancelled) {
         alert('취소했습니다.');
       } else {
         const data = await AccessToken.getCurrentAccessToken();
         this.signInHandler(data.accessToken.toString());
       }
-    } catch(err) {
-      console.log(err);
-      alert("앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.");
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('facebookSignInHandler', err);
+      alert('앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.1');
     }
   }
 
@@ -47,12 +49,15 @@ class SignInScreen extends Component {
       <View style={styles.container}>
         <Spinner
           visible={this.props.isLoading}
-          textContent={'로딩 중...'}
+          textContent="로딩 중..."
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.signInControlContainer}>
-          <Button primary style={styles.signInButton}
-            onPress={this.facebookSignInHandler}>
+          <Button
+            primary
+            style={styles.signInButton}
+            onPress={this.facebookSignInHandler}
+          >
             <Icon
               size={28}
               color="white"
@@ -60,24 +65,30 @@ class SignInScreen extends Component {
             />
             <Text style={styles.signInButtonText}> 페이스북 로그인</Text>
           </Button>
-          <Button primary style={styles.signInButton}
-            onPress={this.goToEmailSignInHandler}>
+          <Button
+            primary
+            style={styles.signInButton}
+            onPress={this.goToEmailSignInHandler}
+          >
             <Icon
               size={28}
               color="white"
-              name={Platform.select({android: "md-mail", ios: "ios-mail"})}
+              name={Platform.select({ android: 'md-mail', ios: 'ios-mail' })}
             />
             <Text style={styles.signInButtonText}> 이메일 로그인</Text>
           </Button>
         </View>
-        <Button transparent dark
+        <Button
+          transparent
+          dark
           style={{ alignSelf: 'center' }}
-          onPress={this.goToSignUpHandler}>
+          onPress={this.goToSignUpHandler}
+        >
           <Text>처음 오셨습니까? </Text>
           <Text style={{ fontWeight: 'bold' }}>가입하기</Text>
           <Icon
             size={15}
-            name={Platform.select({android: "md-arrow-round-forward", ios: "ios-arrow-round-forward"})}
+            name={Platform.select({ android: 'md-arrow-round-forward', ios: 'ios-arrow-round-forward' })}
           />
         </Button>
       </View>
@@ -111,16 +122,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => {
-  return {
-    isLoading: state.ui.isLoading
-  }
-}
+const mapStateToProps = state => ({
+  isLoading: state.ui.isLoading
+});
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onSignIn: (authData) => dispatch(authSignIn(authData))
-  };
-};
+const mapDispatchToProps = dispatch => ({
+  onSignIn: authData => dispatch(authSignIn(authData))
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignInScreen);

@@ -3,6 +3,7 @@ import {
   View, StyleSheet, Text, Platform, TouchableOpacity
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import commonColors from '../styles/colors';
 
 class ChannelTopBarTitleScreen extends PureComponent {
   handleTitlePressed = () => {
@@ -14,12 +15,11 @@ class ChannelTopBarTitleScreen extends PureComponent {
       <View style={styles.container}>
         <TouchableOpacity onPress={this.handleTitlePressed}>
           <View style={styles.titleContainer}>
-            <Text numberOfLines={1}>{this.props.channel?.title || '채널'}</Text>
+            <Text numberOfLines={1} style={styles.title}>{this.props.channel?.title || '채널'}</Text>
             <View style={styles.iconContainer}>
               <Icon
-                size={16}
-                color="#ccc"
-                name={Platform.select({ android: 'md-arrow-down', ios: 'ios-arrow-down' })}
+                size={20}
+                name={Platform.select({ android: 'md-information-circle-outline', ios: 'ios-information-circle-outline' })}
                 style={styles.icon}
               />
             </View>
@@ -41,6 +41,10 @@ const styles = StyleSheet.create({
   titleContainer: {
     position: 'relative',
   },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
   iconContainer: {
     position: 'absolute',
     right: -20,
@@ -50,6 +54,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     flex: 1,
+    color: commonColors.alpha50,
   },
 });
 

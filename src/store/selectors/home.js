@@ -68,12 +68,13 @@ export const homeGroupsSelector = ormCreateSelector(
       });
 
       if (uncategorizedChannels.length > 0) {
-        const hasSibling = (categorizedChannels.length > 0);
+        const hasSibling = (groupView.categories.length > 0);
         groupView.categories.push({
           ...Category.nullObject(hasSibling),
           isUnread: unreadNullCategory,
           key: `null-${groupModel.id.toString()}`,
-          channels: uncategorizedChannels
+          channels: uncategorizedChannels,
+          hasSibling,
         });
       }
 

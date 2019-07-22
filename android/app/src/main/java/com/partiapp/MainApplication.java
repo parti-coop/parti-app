@@ -53,7 +53,7 @@ public class MainApplication extends NavigationApplication {
       new ReactNativeConfigPackage(),
       new FBSDKPackage(mCallbackManager),
       new ColorMatrixImageFiltersPackage(),
-      new LinearGradientPackage(),
+      new LinearGradientPackage()
     );
   }
 

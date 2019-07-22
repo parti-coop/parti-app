@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Platform, View, Text, StyleSheet } from 'react-native';
+import {
+  Platform, View, Text, StyleSheet
+} from 'react-native';
 import { Button } from 'native-base';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Navigation } from 'react-native-navigation';
 
-import { goToAuthRootSignIn } from '../../screens/routes';
+import { goToAuthRootSignIn } from '../routes';
 
 class SignUpScreen extends Component {
   goToSignInHandler = () => {
@@ -15,15 +16,18 @@ class SignUpScreen extends Component {
     return (
       <View style={styles.container}>
         <Text>(준비 중)</Text>
-        <Button transparent dark
+        <Button
+          transparent
+          dark
           style={{ alignSelf: 'center' }}
-          onPress={this.goToSignInHandler}>
-            <Text>이미 가입하셨나요? </Text>
-            <Text style={{ fontWeight: 'bold' }}>로그인하기</Text>
-            <Icon
-              size={15}
-              name={Platform.select({android: "md-arrow-round-forward", ios: "ios-arrow-round-forward"})}
-            />
+          onPress={this.goToSignInHandler}
+        >
+          <Text>이미 가입하셨나요? </Text>
+          <Text style={{ fontWeight: 'bold' }}>로그인하기</Text>
+          <Icon
+            size={15}
+            name={Platform.select({ android: 'md-arrow-round-forward', ios: 'ios-arrow-round-forward' })}
+          />
         </Button>
       </View>
     );
