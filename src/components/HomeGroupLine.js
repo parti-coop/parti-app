@@ -11,8 +11,8 @@ class HomeGroupLine extends PureComponent {
 
   render() {
     const iconName = this.props.isExpanded
-      ? Platform.select({ android: 'md-arrow-up', ios: 'ios-arrow-up' })
-      : Platform.select({ android: 'md-arrow-down', ios: 'ios-arrow-down' });
+      ? 'ios-arrow-up'
+      : 'ios-arrow-down';
 
     return (
       <View style={styles.container}>

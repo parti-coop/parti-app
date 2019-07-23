@@ -17,6 +17,7 @@ const loadIcons = async () => {
   loadedIconsMap.signUp = await loadIcon('preson-add', 30);
   loadedIconsMap.search = await loadIcon('search', 30);
   loadedIconsMap.notifications = await loadIcon('notifications', 30);
+  loadedIconsMap.info = await Icon.getImageSource('ios-information-circle-outline', 30);
   loadedIconsMap.more = await loadIcon('more', 30);
   // eslint-disable-next-line global-require
   loadedIconsMap.logo = require('../res/images/logo.png');

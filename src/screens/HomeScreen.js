@@ -46,14 +46,6 @@ class HomeScreen extends Component {
   setNavigationOptions = () => {
     Navigation.mergeOptions(this.props.componentId, {
       topBar: {
-        noBorder: true,
-        leftButtons: [
-          {
-            id: BUTTON_ID_LOGO,
-            icon: loadedIconsMap.logo,
-            color: commonColors.darkGray,
-          }
-        ],
         rightButtons: [
           {
             id: BUTTON_ID_MORE,
@@ -71,7 +63,26 @@ class HomeScreen extends Component {
             color: commonColors.darkGray,
           },
         ],
+        ...Platform.select({
+          ios: {
+            leftButtons: [
+              {
+                id: BUTTON_ID_LOGO,
+                icon: loadedIconsMap.logo,
+                color: commonColors.darkGray,
+              }
+            ],
+          },
+          android: {
+            background: {
+              component: {
+                name: 'HomeTopBarBackground',
+              }
+            }
+          }
+        }),
       },
+
     });
   }
 
@@ -139,31 +150,30 @@ class HomeScreen extends Component {
       || (!this.props.isLoading && item.isUnread);
 
     let content;
-    if (isCategory) {
-      if (isExpanded) {
+    if (isExpanded) {
+      if (isCategory) {
         content = (
           <Text style={styles.categoryText}>
             {item.name}
           </Text>
         );
       } else {
-        content = <View />;
+        content = (
+          <HomeChannelLine
+            group={group}
+            channel={item}
+            onChannelPressed={this.channelPressedHanlder}
+            isExpanded={isExpanded}
+          />
+        );
       }
-    } else {
-      content = (
-        <HomeChannelLine
-          group={group}
-          channel={item}
-          onChannelPressed={this.channelPressedHanlder}
-          isExpanded={isExpanded}
-        />
+      return (
+        <View style={{ marginHorizontal: 16 }}>
+          {content}
+        </View>
       );
     }
-    return (
-      <View style={{ marginHorizontal: 16, height: (isExpanded ? null : 0) }}>
-        {content}
-      </View>
-    );
+    return null;
   }
 
   renderHeader = () => (

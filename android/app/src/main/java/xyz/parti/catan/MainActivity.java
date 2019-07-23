@@ -1,4 +1,4 @@
-package com.partiapp;
+package xyz.parti.catan;
 
 import com.reactnativenavigation.NavigationActivity;
 import android.content.Intent;

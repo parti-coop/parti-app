@@ -18,7 +18,7 @@ export const authSignIn = authData => async (dispatch) => {
   try {
     const accessToken = await dispatch(accessTokenCreateTokenRequested(authData));
     if (!accessToken) {
-      alert('앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.2');
+      alert('앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.');
       dispatch(uiStopLoading());
       return;
     }
@@ -29,7 +29,7 @@ export const authSignIn = authData => async (dispatch) => {
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn('authSignIn', err);
-    alert('앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.3');
+    alert('앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.');
     dispatch(uiStopLoading());
   }
 };

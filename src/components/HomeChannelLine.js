@@ -11,16 +11,13 @@ class HomeChannelLine extends PureComponent {
   channelPressedHandler = () => this.props.onChannelPressed(this.props.group, this.props.channel);
 
   render() {
-    const logoHeight = this.props.isExpanded ? LOGO_SIZE : 0;
-    const newBadgeContainerHeight = this.props.isExpanded ? null : 0;
-
     const TouchableOpacityEx = withPreventDoubleClick(TouchableOpacity);
     return (
       <TouchableOpacityEx onPress={this.channelPressedHandler}>
         <View style={styles.container}>
           <Image
             source={{ url: this.props.channel.logoUrl }}
-            style={[styles.logo, { height: logoHeight }]}
+            style={styles.logo}
           />
           <View style={styles.titleContainer}>
             <Text
@@ -32,7 +29,7 @@ class HomeChannelLine extends PureComponent {
             {
               this.props.channel.isUnread
               && (
-                <View style={[styles.newBadgeContainer, { height: newBadgeContainerHeight }]}>
+                <View style={styles.newBadgeContainer}>
                   <Text style={styles.newBadge}>N</Text>
                 </View>
               )

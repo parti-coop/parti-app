@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.partiapp">
+  package="xyz.parti.catan">
 
     <uses-permission android:name="android.permission.INTERNET" />
 

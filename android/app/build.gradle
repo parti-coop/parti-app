@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import com.android.build.OutputFile
 
@@ -102,12 +103,22 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.partiapp"
+        applicationId "xyz.parti.catan"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy "RNN.reactNativeVersion", "reactNative57_5" // See note below!
-        versionCode 1
-        versionName "1.0"
+        versionCode 50
+        versionName "2.0.0"
+    }
+    signingConfigs {
+        release {
+            if (project.hasProperty('PARTI_RELEASE_STORE_FILE')) {
+                storeFile file(PARTI_RELEASE_STORE_FILE)
+                storePassword PARTI_RELEASE_STORE_PASSWORD
+                keyAlias PARTI_RELEASE_KEY_ALIAS
+                keyPassword PARTI_RELEASE_KEY_PASSWORD
+            }
+        }
     }
     splits {
         abi {
@@ -121,6 +132,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release

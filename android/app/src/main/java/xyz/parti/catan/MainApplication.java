@@ -1,4 +1,4 @@
-package com.partiapp;
+package xyz.parti.catan;
 
 import android.app.Application;
 

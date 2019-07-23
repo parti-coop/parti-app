@@ -128,6 +128,7 @@ export const goToHomeRoot = () => Navigation.setRoot({
             options: {
               topBar: {
                 noBorder: true,
+                elevation: 0,
               }
             },
           },

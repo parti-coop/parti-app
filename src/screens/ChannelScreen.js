@@ -43,19 +43,6 @@ class ChannelScreen extends Component {
       return;
     }
     this.props.onLoadMorePosts(this.props.currentChannel);
-
-    Navigation.mergeOptions(this.props.componentId, {
-      topBar: {
-        title: {
-          component: {
-            passProps: {
-              channel: this.props.currentChannel,
-              onTitlePressed: this.handleTopBarTitlePressed,
-            },
-          }
-        },
-      }
-    });
   }
 
   componentWillUnmount() {
@@ -72,6 +59,10 @@ class ChannelScreen extends Component {
           component: {
             name: 'ChannelTopBarTitle',
             alignment: 'fill',
+            passProps: {
+              channel: this.props.currentChannel,
+              onTitlePressed: this.handleTopBarTitlePressed,
+            },
           }
         },
         rightButtons: [
@@ -196,7 +187,6 @@ class ChannelScreen extends Component {
             </View>
           </View>
         </View>
-        <View style={itemStyles.divider} />
       </View>
     );
   }
@@ -240,6 +230,8 @@ class ChannelScreen extends Component {
       ) : null
   );
 
+  renderSeparator = () => <View style={itemStyles.divider} />;
+
   render() {
     if (!this.props.currentChannel) {
       return (
@@ -257,6 +249,7 @@ class ChannelScreen extends Component {
           renderItem={this.renderPost}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
+          ItemSeparatorComponent={this.renderSeparator}
           onEndReached={this.loadMoreData}
           extraData={[this.props.isLoading, this.state.isExpandedHeader]}
           onEndReachedThreshold={100}

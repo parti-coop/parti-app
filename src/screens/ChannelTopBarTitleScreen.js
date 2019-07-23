@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import {
-  View, StyleSheet, Text, Platform, TouchableOpacity
+  View, StyleSheet, Text, Platform, TouchableOpacity, Image
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import commonColors from '../styles/colors';
@@ -16,13 +16,11 @@ class ChannelTopBarTitleScreen extends PureComponent {
         <TouchableOpacity onPress={this.handleTitlePressed}>
           <View style={styles.titleContainer}>
             <Text numberOfLines={1} style={styles.title}>{this.props.channel?.title || '채널'}</Text>
-            <View style={styles.iconContainer}>
-              <Icon
-                size={20}
-                name={Platform.select({ android: 'md-information-circle-outline', ios: 'ios-information-circle-outline' })}
-                style={styles.icon}
-              />
-            </View>
+            <Icon
+              name="ios-information-circle-outline"
+              size={Platform.select({ ios: 16, android: 20 })}
+              style={styles.icon}
+            />
           </View>
         </TouchableOpacity>
       </View>
@@ -32,29 +30,43 @@ class ChannelTopBarTitleScreen extends PureComponent {
 
 const styles = StyleSheet.create({
   container: {
+    borderWidth: 1,
+    borderColor: 'transparent',
     flex: 1,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 32,
+    ...Platform.select({
+      ios: {
+        paddingHorizontal: 32,
+      },
+      android: {
+        paddingRight: 30,
+      }
+    }),
   },
   titleContainer: {
     position: 'relative',
+    overflow: 'visible',
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
   },
-  iconContainer: {
-    position: 'absolute',
-    right: -20,
-    top: 0,
-    height: '100%',
-    justifyContent: 'center',
-  },
   icon: {
-    flex: 1,
+    position: 'absolute',
     color: commonColors.alpha50,
+    ...Platform.select({
+      ios: {
+        right: -16,
+        top: 3,
+      },
+      android: {
+        right: -25,
+        top: 3,
+      },
+    }),
   },
 });
 

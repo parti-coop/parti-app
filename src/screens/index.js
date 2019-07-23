@@ -54,6 +54,10 @@ const registerScreens = (store, provider) => {
     'ChannelTopBarTitle', () => require('./ChannelTopBarTitleScreen').default,
     provider, store
   );
+  Navigation.registerComponentWithRedux(
+    'HomeTopBarBackground', () => require('./HomeTopBarBackgroundScreen').default,
+    provider, store
+  );
 };
 
 export { registerScreens, setInitialLayout };
