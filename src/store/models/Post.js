@@ -45,11 +45,20 @@ class Post extends ValidatingModel {
 
   static reducer(action, SesstionSpecificPost) {
     switch (action.type) {
-      case CHANNELS_LOAD_POSTS_RESPONDED:
+      case CHANNELS_LOAD_POSTS_RESPONDED: {
+        let filteredPosts = SesstionSpecificPost.filter({ channel_id: action.channel.id, });
+        if (action.afterDateTime) {
+          filteredPosts = filteredPosts.filter(
+            post => post.lastStroked.at < Date.parse(action.afterDateTime)
+          );
+        }
+        filteredPosts.delete();
+
         action.posts?.map((post) => {
           SesstionSpecificPost.parse(post);
         });
         break;
+      }
       default:
         break;
     }

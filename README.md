@@ -23,3 +23,7 @@
 * 한 화면에 에러는 한 번만!
 * 홈 그룹과 채널 정렬
 
+# Memo
+
+react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+

@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   View, FlatList, Image, StyleSheet, Platform,
-  Dimensions, ImageBackground, ActivityIndicator
+  Dimensions, ActivityIndicator
 } from 'react-native';
+import Display from 'react-native-display';
 import {
   Root, Text
 } from 'native-base';
@@ -23,6 +24,11 @@ const BUTTON_ID_SEARCH = 'BUTTON_ID_SEARCH';
 const CARD_PADDING_H = 16;
 const CARD_PADDING_V = 12;
 const CARD_PADDING_V_LAST_STROKED = 8;
+
+const { height, width } = Dimensions.get('window');
+const isLandscape = width > height;
+const appBarHeight = (Platform.select({ ios: (isLandscape ? 32 : 44), android: 56 }));
+const SCREEN_HEIGHT = (isLandscape ? width : height) - appBarHeight;
 
 class ChannelScreen extends Component {
   state = {
@@ -77,7 +83,7 @@ class ChannelScreen extends Component {
   }
 
   navigationButtonPressedHandler = () => {
-    alert('개발 중입니다');
+    alert('개발 중입니다!!');
   };
 
   loadMoreData = () => {
@@ -103,87 +109,99 @@ class ChannelScreen extends Component {
     });
   }
 
-  renderFooter = () => (
-    this.props.isLoading
-      ? (
+  renderFooter = () => {
+    if (this.props.isLoading) {
+      return (
         <View style={indicatorStyles.container}>
           <ActivityIndicator style={indicatorStyles.indicator} />
         </View>
-      ) : null
-  );
+      );
+    }
+
+    return null;
+  }
+
+  renderEmpty = () => {
+    if (this.props.isLoading || !this.props.noMoreData || this.props.posts?.length > 0) {
+      return null;
+    }
+    return (
+      <View style={listStyles.emptyContainer}>
+        <Text style={listStyles.empty}>아직 게시글이 없습니다. 가장 먼저 등록해 보세요.</Text>
+      </View>
+    );
+  }
 
   renderPost = ({ item: post }) => {
     const hasLastStroked = !!post.lastStroked?.text && !!post.lastStroked?.at;
 
     return (
-      <View>
-        <View style={
-          [
-            itemStyles.container,
-            { marginTop: (hasLastStroked ? CARD_PADDING_V_LAST_STROKED : CARD_PADDING_V) }
-          ]}
-        >
-          {
-            hasLastStroked
-            && (
-            <View style={itemStyles.lastStroked}>
-              <Text style={itemStyles.lastStrokedTex}>
-                {post.lastStroked.text}
-                <SmartMoment style={itemStyles.lastStrokedAt}>{post.lastStroked.at}</SmartMoment>
-              </Text>
-            </View>
-            )
-          }
-          <View style={itemStyles.postMeta}>
-            <View style={itemStyles.postMetaLeft}>
-              <Image source={{ uri: post.user.imageUrl }} style={itemStyles.postMetaUserImage} />
-              <View>
-                <Text style={itemStyles.postMetaUserNickname}>{post.user.nickname}</Text>
-                <SmartMoment style={itemStyles.postMetaCreatedAt}>{post.createdAt}</SmartMoment>
-              </View>
-            </View>
+      <View style={
+        [
+          itemStyles.container,
+          { paddingTop: (hasLastStroked ? CARD_PADDING_V_LAST_STROKED : CARD_PADDING_V) }
+        ]}
+      >
+        {
+          hasLastStroked
+          && (
+          <View style={itemStyles.lastStroked}>
+            <Text style={itemStyles.lastStrokedTex}>
+              {post.lastStroked.text}
+              <SmartMoment style={itemStyles.lastStrokedAt}>{post.lastStroked.at}</SmartMoment>
+            </Text>
+          </View>
+          )
+        }
+        <View style={itemStyles.postMeta}>
+          <View style={itemStyles.postMetaLeft}>
+            <Image source={{ uri: post.user.imageUrl }} style={itemStyles.postMetaUserImage} />
             <View>
-              <Icon size={15} name={Platform.select({ android: 'md-more', ios: 'ios-more' })} />
+              <Text style={itemStyles.postMetaUserNickname}>{post.user.nickname}</Text>
+              <SmartMoment style={itemStyles.postMetaCreatedAt}>{post.createdAt}</SmartMoment>
             </View>
           </View>
-          {
-            !!post.body && post.body.length > 0
-            && (
-              <View>
-                <HTML
-                  html={post.body}
-                  imagesMaxWidth={Dimensions.get('window').width}
-                  ignoredStyles={['display', 'width', 'height', 'font-family']}
-                  containerStyle={itemStyles.postBodyContainer}
-                  baseFontStyle={itemStyles.postBody}
-                />
-              </View>
-            )
-          }
-          <View style={itemStyles.actionButtons}>
+          <View>
+            <Icon size={15} name={Platform.select({ android: 'md-more', ios: 'ios-more' })} />
+          </View>
+        </View>
+        {
+          !!post.body && post.body.length > 0
+          && (
             <View>
-              <View style={commonStyles.flexRow}>
-                <Icon size={15} color={commonColors.alpha50} name={Platform.select({ android: 'md-heart', ios: 'ios-heart' })} />
-                <Text style={itemStyles.actionButton}>
-                  공감
-                  {
-                    post.upvotesCount > 0
-                    && <Text style={itemStyles.actionCount}>{post.upvotesCount}</Text>
-                  }
-                </Text>
-              </View>
+              <HTML
+                html={post.body}
+                imagesMaxWidth={Dimensions.get('window').width}
+                ignoredStyles={['display', 'width', 'height', 'font-family']}
+                containerStyle={itemStyles.postBodyContainer}
+                baseFontStyle={itemStyles.postBody}
+              />
             </View>
-            <View>
-              <View style={commonStyles.flexRow}>
-                <Icon size={15} color={commonColors.alpha50} name={Platform.select({ android: 'md-text', ios: 'ios-text' })} />
-                <Text style={itemStyles.actionButton}>
-                  댓글
-                  {
-                    post.commentsCount > 0
-                    && <Text style={itemStyles.actionCount}>{post.commentsCount}</Text>
-                  }
-                </Text>
-              </View>
+          )
+        }
+        <View style={itemStyles.actionButtons}>
+          <View>
+            <View style={commonStyles.flexRow}>
+              <Icon size={15} color={commonColors.alpha50} name={Platform.select({ android: 'md-heart', ios: 'ios-heart' })} />
+              <Text style={itemStyles.actionButton}>
+                공감
+                {
+                  post.upvotesCount > 0
+                  && <Text style={itemStyles.actionCount}>{post.upvotesCount}</Text>
+                }
+              </Text>
+            </View>
+          </View>
+          <View>
+            <View style={commonStyles.flexRow}>
+              <Icon size={15} color={commonColors.alpha50} name={Platform.select({ android: 'md-text', ios: 'ios-text' })} />
+              <Text style={itemStyles.actionButton}>
+                댓글
+                {
+                  post.commentsCount > 0
+                  && <Text style={itemStyles.actionCount}>{post.commentsCount}</Text>
+                }
+              </Text>
             </View>
           </View>
         </View>
@@ -192,42 +210,39 @@ class ChannelScreen extends Component {
   }
 
   renderHeader = () => (
-    this.state.isExpandedHeader
-      ? (
-        <View>
-          <View style={headerStyles.container}>
-            <View style={headerStyles.logoContainer}>
-              <ImageBackground
-                style={headerStyles.logoBackground}
-                resizeMode="cover"
-                source={{ url: this.props.currentChannel.logoUrl }}
-                blurRadius={30}
-              />
-              <View style={headerStyles.logoImageContainer}>
-                <Image
-                  source={{ url: this.props.currentChannel.logoUrl }}
-                  blurRadius={1}
-                  style={headerStyles.logoImage}
-                />
-              </View>
-            </View>
-            <View style={headerStyles.channelMetaContainer}>
-              <Text style={headerStyles.groupTitle}>
-                {this.props.currentChannel.group.title}
-              </Text>
-              <Text style={headerStyles.channleTitle}>
-                {this.props.currentChannel.title}
-              </Text>
-              <View style={headerStyles.actionButtons}>
-                <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-notifications-outline', ios: 'ios-notifications-outline' })} />
-                <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-person-add', ios: 'ios-person-add' })} />
-                <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-open', ios: 'ios-open' })} />
-              </View>
-            </View>
+    <Display enable={this.state.isExpandedHeader} keepAlive style={headerStyles.container}>
+      <View style={[headerStyles.logoImageContainer, { alignItems: (this.state.isExpandedHeader ? 'center' : 'auto') }]}>
+        <Image
+          style={headerStyles.logoBackground}
+          resizeMode="cover"
+          source={{ uri: this.props.currentChannel.logoSmUrl }}
+          blurRadius={Platform.select({ ios: 7, android: 5 })}
+        />
+        <Image
+          source={{ uri: this.props.currentChannel.logoMdUrl }}
+          style={headerStyles.logoImage}
+        />
+      </View>
+      <View style={headerStyles.channelMetaContainer}>
+        <Text style={headerStyles.groupTitle}>
+          {this.props.currentChannel.group.title}
+        </Text>
+        <Text style={headerStyles.channleTitle}>
+          {this.props.currentChannel.title}
+        </Text>
+        {
+          this.state.isExpandedHeader
+          && (
+          <View style={headerStyles.actionButtons}>
+            <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-notifications-outline', ios: 'ios-notifications-outline' })} />
+            <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-person-add', ios: 'ios-person-add' })} />
+            <Icon size={21} color={commonColors.alpha50} name={Platform.select({ android: 'md-open', ios: 'ios-open' })} />
           </View>
-          <View style={itemStyles.divider} />
-        </View>
-      ) : null
+          )
+        }
+      </View>
+      <View style={itemStyles.divider} />
+    </Display>
   );
 
   renderSeparator = () => <View style={itemStyles.divider} />;
@@ -249,40 +264,57 @@ class ChannelScreen extends Component {
           renderItem={this.renderPost}
           ListHeaderComponent={this.renderHeader}
           ListFooterComponent={this.renderFooter}
+          ListEmptyComponent={this.renderEmpty}
           ItemSeparatorComponent={this.renderSeparator}
           onEndReached={this.loadMoreData}
           extraData={[this.props.isLoading, this.state.isExpandedHeader]}
           onEndReachedThreshold={100}
           scrollEventThrottle={16}
           onMomentumScrollBegin={this.handleMomentumScrollBegin}
+          contentContainerStyle={listStyles.listContent}
+          style={listStyles.list}
         />
       </Root>
     );
   }
 }
 
+const listStyles = StyleSheet.create({
+  list: {
+    backgroundColor: commonColors.alpha10
+  },
+  listContent: {
+    flexGrow: 1,
+  },
+  emptyContainer: {
+    justifyContent: 'center',
+    height: SCREEN_HEIGHT / 2,
+  },
+  empty: {
+    color: commonColors.darkGray,
+    textAlign: 'center',
+  },
+});
+
 const headerStyles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
   },
-  logoContainer: {
-    position: 'relative',
-  },
   logoBackground: {
-    height: 128,
+    height: '100%',
     width: '100%',
     opacity: 0.6,
   },
   logoImageContainer: {
-    position: 'absolute',
-    top: 65,
+    height: 128,
     width: '100%',
-    alignItems: 'center',
   },
   logoImage: {
     width: 84,
     height: 84,
-    borderRadius: 5
+    borderRadius: 5,
+    position: 'absolute',
+    bottom: -20,
   },
   channelMetaContainer: {
     height: 121,
@@ -315,6 +347,7 @@ const itemStyles = StyleSheet.create({
   },
   container: {
     paddingBottom: 12,
+    backgroundColor: 'white',
   },
   lastStroked: {
     fontSize: 14,

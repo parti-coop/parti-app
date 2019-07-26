@@ -23,22 +23,40 @@ class Group extends ValidatingModel {
     return 'Group';
   }
 
-  static parse(data) {
+  static parse(actionGroup) {
     const { Category, Channel } = this.session;
+    const SessionSpecificGroup = this.session.Group;
     const clonedData = {
-      ...data,
-      key: String(data.id),
-      categories: data.categories.map(category => Category.upsert(category)),
-      channels: data.channels.map(channel => Channel.upsert(channel))
+      ...actionGroup,
+      key: String(actionGroup.id),
+      categories: actionGroup.categories.map(category => Category.upsert(category)),
+      channels: actionGroup.channels.map(channel => Channel.upsert(channel))
     };
+
+    const actionChannelIds = actionGroup.channels.map(channel => channel.id);
+    const notMemberChannels = SessionSpecificGroup.withId(actionGroup.id).channels
+      .filter({ isMember: true })
+      .filter(channel => !(actionChannelIds.includes(channel.id)));
+    notMemberChannels.update({ isMember: false });
+
     return this.upsert(clonedData);
   }
 
   static reducer(action, SessionSpecificGroup) {
     switch (action.type) {
-      case HOME_LOAD_GROUPS_RESPONDED:
-        action.groups?.map(group => SessionSpecificGroup.parse(group));
+      case HOME_LOAD_GROUPS_RESPONDED: {
+        const actionGroupIds = action.groups?.map(group => group.id) || [];
+        const notMemberGroups = SessionSpecificGroup
+          .filter({ isMember: true })
+          .filter(group => !(actionGroupIds.includes(group.id)));
+        notMemberGroups.toModelArray().forEach((group) => {
+          group.channels.update({ isMember: false });
+        });
+        notMemberGroups.update({ isMember: false });
+
+        action.groups?.forEach(actionGroup => SessionSpecificGroup.parse(actionGroup));
         break;
+      }
       default:
         break;
     }

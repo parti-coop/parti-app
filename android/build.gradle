@@ -37,3 +37,21 @@ allprojects {
         }
     }
 }
+
+
+subprojects { subproject ->
+    afterEvaluate {
+        if ((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
+            android {
+                variantFilter { variant ->
+                    def names = variant.flavors*.name
+                    // To check for a certain build type, use variant.buildType.name == "<buildType>"
+                    if (names.contains("reactNative51") || names.contains("reactNative55")) {
+                        // Gradle ignores any variants that satisfy the conditions above.
+                        setIgnore(true)
+                    }
+                }
+            }
+        }
+    }
+}

@@ -26,13 +26,13 @@ export const channelLoadMorePostsRequested = channel => async (dispatch, getStat
       dispatch(uiShowError());
       return;
     }
-    if (res.posts.length > 0) {
-      await dispatch(channelLoadPostsResponded(res.posts));
-      const responsePosts = res.posts
-        .map(post => ({ id: post.id, lastStrokedAt: post.lastStroked.at }));
-      const noMoreData = res.isLastPage;
-      dispatch(channelLoadPostsSucceeded(channel, responsePosts, noMoreData, afterDateTime));
-    }
+
+    await dispatch(channelLoadPostsResponded(channel, res.posts, afterDateTime));
+    const responsePosts = res.posts
+      .map(post => ({ id: post.id, lastStrokedAt: post.lastStroked.at }));
+    const noMoreData = res.isLastPage;
+    dispatch(channelLoadPostsSucceeded(channel, responsePosts, noMoreData, afterDateTime));
+
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn('channelLoadMorePostsRequested ERROR', err);

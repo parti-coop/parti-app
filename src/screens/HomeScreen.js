@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {
   View, SectionList, StyleSheet, Platform
 } from 'react-native';
+import Display from 'react-native-display';
 import { Root, Text, ActionSheet } from 'native-base';
 import { Navigation } from 'react-native-navigation';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -150,31 +151,28 @@ class HomeScreen extends Component {
       || (!this.props.isLoading && item.isUnread);
 
     let content;
-    if (isExpanded) {
-      if (isCategory) {
-        content = (
-          <Text style={styles.categoryText}>
-            {item.name}
-          </Text>
-        );
-      } else {
-        content = (
-          <HomeChannelLine
-            group={group}
-            channel={item}
-            onChannelPressed={this.channelPressedHanlder}
-            isExpanded={isExpanded}
-          />
-        );
-      }
-      return (
-        <View style={{ marginHorizontal: 16 }}>
-          {content}
-        </View>
+    if (isCategory) {
+      content = (
+        <Text style={styles.categoryText}>
+          {item.name}
+        </Text>
+      );
+    } else {
+      content = (
+        <HomeChannelLine
+          group={group}
+          channel={item}
+          onChannelPressed={this.channelPressedHanlder}
+        />
       );
     }
-    return null;
-  }
+
+    return (
+      <Display enable={isExpanded} keepAlive style={styles.itemContainer}>
+        {content}
+      </Display>
+    );
+  };
 
   renderHeader = () => (
     <View style={styles.welcomeContainer}>
@@ -278,6 +276,9 @@ const styles = StyleSheet.create({
   },
   welcomeCountLinkText: {
     color: 'white',
+  },
+  itemContainer: {
+    paddingHorizontal: 16,
   },
   item: {
     paddingLeft: 10,

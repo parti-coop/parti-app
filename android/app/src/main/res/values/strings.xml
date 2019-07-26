@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">PartiApp</string>
-    <string name="facebook_app_id">743728572394700</string>
+    <string name="app_name">빠띠 그룹스</string>
+    <string name="facebook_app_id">@string/FACEBOOK_APP_ID</string>
+    <string name="fb_login_protocol_scheme">@string/FACEBOOK_CUSTOM_URL_SCHEME</string>
 </resources>

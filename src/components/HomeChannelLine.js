@@ -1,11 +1,11 @@
 import React, { PureComponent } from 'react';
 import {
-  View, Image, Text, TouchableOpacity, StyleSheet
+  View, Image, Text, TouchableOpacity, StyleSheet, Platform
 } from 'react-native';
 
 import withPreventDoubleClick from './withPreventDoubleClick';
 
-const LOGO_SIZE = 20;
+const LOGO_SIZE = Platform.select({ ios: 20, android: 26 });
 
 class HomeChannelLine extends PureComponent {
   channelPressedHandler = () => this.props.onChannelPressed(this.props.group, this.props.channel);
@@ -16,8 +16,8 @@ class HomeChannelLine extends PureComponent {
       <TouchableOpacityEx onPress={this.channelPressedHandler}>
         <View style={styles.container}>
           <Image
-            source={{ url: this.props.channel.logoUrl }}
             style={styles.logo}
+            source={{ uri: this.props.channel.logoXsUrl }}
           />
           <View style={styles.titleContainer}>
             <Text

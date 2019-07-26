@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "android1": "react-native run-android",
     "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug && cd .. && react-native run-android",
     "ios": "react-native run-ios",
-    "test": "jest ./tests/**/*.spec.js"
+    "test": "jest ./tests/**/*.spec.js",
+    "bundle_ios": "react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/release/main.jsbundle --assets-dest ios/release/main.jsbundle",
+    "bundle_android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.4.0",
@@ -31,6 +32,8 @@
     "react-native": "^0.59.8",
     "react-native-color-matrix-image-filters": "5.1.5",
     "react-native-config": "^0.11.7",
+    "react-native-display": "1.0.8",
+    "react-native-fabric": "0.5.2",
     "react-native-fbsdk": "^0.8.0",
     "react-native-linear-gradient": "2.5.4",
     "react-native-loading-spinner-overlay": "^1.0.1",

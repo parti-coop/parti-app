@@ -35,14 +35,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
     ...Platform.select({
       ios: {
         paddingHorizontal: 32,
+        justifyContent: 'center',
       },
       android: {
         paddingRight: 30,
+        justifyContent: 'flex-start',
       }
     }),
   },

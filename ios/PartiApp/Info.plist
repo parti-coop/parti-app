@@ -27,16 +27,16 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb743728572394700</string>
+				<string>__RN_CONFIG_FACEBOOK_CUSTOM_URL_SCHEME</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>32</string>
+	<string>33</string>
 	<key>FacebookAppID</key>
-	<string>743728572394700</string>
+	<string>__RN_CONFIG_FACEBOOK_APP_ID</string>
 	<key>FacebookDisplayName</key>
-	<string>parti-xyz</string>
+	<string>__RN_CONFIG_FACEBOOK_DISPLAY_NAME</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>

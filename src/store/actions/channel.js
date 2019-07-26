@@ -16,9 +16,11 @@ export const channelLoadPostsSucceeded = (channel, responsePosts, noMoreData, af
   };
 };
 
-export const channelLoadPostsResponded = posts => ({
+export const channelLoadPostsResponded = (channel, posts, afterDateTime) => ({
   type: CHANNELS_LOAD_POSTS_RESPONDED,
+  channel,
   posts,
+  afterDateTime,
 });
 
 export const channelStartLoading = channel => ({
