@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
 import {
-  View, Image, Text, TouchableOpacity, StyleSheet, Platform
+  View, Image, Text, TouchableOpacity, StyleSheet
 } from 'react-native';
 
 import withPreventDoubleClick from './withPreventDoubleClick';
-
-const LOGO_SIZE = Platform.select({ ios: 20, android: 26 });
+import commonDimensions from '../styles/dimensions';
 
 class HomeChannelLine extends PureComponent {
   channelPressedHandler = () => this.props.onChannelPressed(this.props.group, this.props.channel);
@@ -48,8 +47,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   logo: {
-    width: LOGO_SIZE,
-    height: LOGO_SIZE,
+    width: commonDimensions.homeChannelLogo,
+    height: commonDimensions.homeChannelLogo,
     marginRight: 8,
     borderRadius: 5,
   },

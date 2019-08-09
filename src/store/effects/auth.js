@@ -2,7 +2,6 @@ import { goToAuthRoot, goToHomeRoot } from '../../screens/routes';
 import { uiStartLoading, uiStopLoading } from '../actions/ui';
 import { accessTokenGetInfoRequested, accessTokenCreateTokenRequested } from './accessToken';
 import { currentUserLoadInfoRequested } from './currentUser';
-import { currentUserClearAll, accessTokenClearAll } from '../actions';
 
 export const authAutoSignIn = () => async (dispatch) => {
   const token = await dispatch(accessTokenGetInfoRequested());
@@ -32,10 +31,4 @@ export const authSignIn = authData => async (dispatch) => {
     alert('앗! 로그인이 안되네요. 잠시 후에 다시 시도해 주세요.');
     dispatch(uiStopLoading());
   }
-};
-
-export const authSignOut = () => async (dispatch) => {
-  await dispatch(accessTokenClearAll());
-  await dispatch(currentUserClearAll());
-  goToAuthRoot();
 };

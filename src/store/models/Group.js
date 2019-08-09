@@ -34,10 +34,13 @@ class Group extends ValidatingModel {
     };
 
     const actionChannelIds = actionGroup.channels.map(channel => channel.id);
-    const notMemberChannels = SessionSpecificGroup.withId(actionGroup.id).channels
-      .filter({ isMember: true })
-      .filter(channel => !(actionChannelIds.includes(channel.id)));
-    notMemberChannels.update({ isMember: false });
+    const groupModel = SessionSpecificGroup.withId(actionGroup.id);
+    if (groupModel) {
+      const notMemberChannels = groupModel.channels
+        .filter({ isMember: true })
+        .filter(channel => !(actionChannelIds.includes(channel.id)));
+      notMemberChannels.update({ isMember: false });
+    }
 
     return this.upsert(clonedData);
   }

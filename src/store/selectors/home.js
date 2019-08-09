@@ -16,7 +16,9 @@ export const homeGroupsSelector = ormCreateSelector(
     .toModelArray()
     .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()))
     .map((groupModel) => {
-      const groupView = Object.assign({}, groupModel.ref);
+      const groupView = Object.assign({
+        key: `group-${groupModel.id}`
+      }, groupModel.ref);
 
       const uncategorizedChannels = [];
       const categorizedChannels = {};
@@ -31,7 +33,7 @@ export const homeGroupsSelector = ormCreateSelector(
         .forEach((channelRef) => {
           const channelView = {
             ...channelRef,
-            key: String(channelRef.id),
+            key: `channel-${String(channelRef.id)}`,
             group: Object.assign({}, groupModel.ref),
           };
 
@@ -62,7 +64,7 @@ export const homeGroupsSelector = ormCreateSelector(
         groupView.categories.push({
           ...categoryRef,
           isUnread: unreadCategoryIds.has(categoryRef.id),
-          key: categoryRef.id.toString(),
+          key: `category-${categoryRef.id.toString()}`,
           channels: categorizedChannels[categoryId]
         });
       });
@@ -72,7 +74,7 @@ export const homeGroupsSelector = ormCreateSelector(
         groupView.categories.push({
           ...Category.nullObject(hasSibling),
           isUnread: unreadNullCategory,
-          key: `null-${groupModel.id.toString()}`,
+          key: `category-null-${groupModel.id.toString()}`,
           channels: uncategorizedChannels,
           hasSibling,
         });

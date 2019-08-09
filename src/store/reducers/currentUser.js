@@ -1,4 +1,4 @@
-import { CURRENT_USER_LOAD_INFO_RESPONDED, CURRENT_USER_CLEAR_ALL } from "../actionTypes";
+import { CURRENT_USER_LOAD_INFO_RESPONDED } from '../actionTypes';
 
 const initialState = {
   nickname: null,
@@ -13,10 +13,6 @@ const reducer = (state = initialState, action) => {
         ...state,
         ...action.currentUser
       };
-    case CURRENT_USER_CLEAR_ALL:
-      return {
-        ...initialState
-      }
     default:
       return state;
   }

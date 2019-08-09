@@ -37,8 +37,12 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>게시물에 회원님의 위치를 등록할 경우 위치를 표시하기 위해 빠띠 그룹스가 위치 정보에 접근할 수 있습니다.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>게시물에 회원님의 위치를 등록할 경우 위치를 표시하기 위해 빠띠 그룹스가 위치 정보에 접근할 수 있습니다.</string>
 	<key>NSAppTransportSecurity</key>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/ -->
 	<dict>
 		<key>NSExceptionDomains</key>

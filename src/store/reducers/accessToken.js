@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_SET_INFO_SUCCEEDED, ACCESS_TOKEN_CLEAR_ALL } from "../actionTypes";
+import { ACCESS_TOKEN_SET_INFO_SUCCEEDED, ACCESS_TOKEN_CLEAR_ALL } from '../actionTypes';
 
 const initialState = {
   isAuthenticated: false,

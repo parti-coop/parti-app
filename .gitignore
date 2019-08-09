@@ -57,5 +57,6 @@ buck-out/
 
 # Bundle artifact
 *.jsbundle
+ios/assets/
 
 .env

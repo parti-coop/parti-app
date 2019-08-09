@@ -49,7 +49,6 @@ class SignInScreen extends Component {
       <View style={styles.container}>
         <Spinner
           visible={this.props.isLoading}
-          textContent="로딩 중..."
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.signInControlContainer}>

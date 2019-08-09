@@ -13,22 +13,18 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import HTML from 'react-native-render-html';
 
 import { channelPostsSelector } from '../store/selectors/channel';
-import { authSignOut, channelLoadMorePostsRequested } from '../store/effects';
+import { channelLoadMorePostsRequested } from '../store/effects';
 import requiredCurrentUser from '../components/requiredCurrentUser';
 import { loadedIconsMap } from '../lib/AppIcons';
 import commonColors from '../styles/colors';
 import commonStyles from '../styles/common';
 import SmartMoment from '../components/SmartMoment';
+import ListEmpty from '../components/ListEmpty';
 
 const BUTTON_ID_SEARCH = 'BUTTON_ID_SEARCH';
 const CARD_PADDING_H = 16;
 const CARD_PADDING_V = 12;
 const CARD_PADDING_V_LAST_STROKED = 8;
-
-const { height, width } = Dimensions.get('window');
-const isLandscape = width > height;
-const appBarHeight = (Platform.select({ ios: (isLandscape ? 32 : 44), android: 56 }));
-const SCREEN_HEIGHT = (isLandscape ? width : height) - appBarHeight;
 
 class ChannelScreen extends Component {
   state = {
@@ -126,9 +122,7 @@ class ChannelScreen extends Component {
       return null;
     }
     return (
-      <View style={listStyles.emptyContainer}>
-        <Text style={listStyles.empty}>아직 게시글이 없습니다. 가장 먼저 등록해 보세요.</Text>
-      </View>
+      <ListEmpty message="아직 게시글이 없습니다. 가장 먼저 게시글을 등록해 보세요." />
     );
   }
 
@@ -286,14 +280,6 @@ const listStyles = StyleSheet.create({
   listContent: {
     flexGrow: 1,
   },
-  emptyContainer: {
-    justifyContent: 'center',
-    height: SCREEN_HEIGHT / 2,
-  },
-  empty: {
-    color: commonColors.darkGray,
-    textAlign: 'center',
-  },
 });
 
 const headerStyles = StyleSheet.create({
@@ -442,7 +428,6 @@ const mapStateToProps = (state, props) => ({
   homeActiveDrawer: state.ui.homeActiveDrawer,
 });
 const mapDispatchToProps = dispatch => ({
-  onSignOut: () => dispatch(authSignOut()),
   onLoadMorePosts: channel => dispatch(channelLoadMorePostsRequested(channel)),
 });
 

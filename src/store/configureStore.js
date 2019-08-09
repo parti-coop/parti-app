@@ -13,8 +13,10 @@ import currentUserReducer from './reducers/currentUser';
 import homeReducer from './reducers/home';
 import channelReducer from './reducers/channel';
 import orm from './models';
+import { AUTH_SIGN_OUT } from './actionTypes';
 
-const rootReducer = combineReducers({
+
+const appReducer = combineReducers({
   ui: uiReducer,
   accessToken: accessTokenReducer,
   currentUser: currentUserReducer,
@@ -22,6 +24,15 @@ const rootReducer = combineReducers({
   channel: channelReducer,
   orm: createReducer(orm)
 });
+
+const rootReducer = (state, action) => {
+  let passState = state;
+  if (action.type === AUTH_SIGN_OUT) {
+    passState = undefined;
+  }
+
+  return appReducer(passState, action);
+};
 
 let composeEnhancers = compose;
 // eslint-disable-next-line no-undef
@@ -36,7 +47,7 @@ if (__DEV__) {
 // });
 
 const persistConfig = {
-  key: 'root6',
+  key: 'root7',
   storage: AsyncStorage,
   whitelist: ['accessToken', 'home', 'currentUser', 'channel', 'orm'],
   timeout: null,
@@ -47,11 +58,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 //   composeEnhancers(applyMiddleware(thunk, logger)));
 // export const persistor = persistStore(store);
 
-const configureStore = () => {
-  return createStore(persistedReducer,
-    composeEnhancers(applyMiddleware(
-      thunk,
-      // logger
-    )));
-};
+const configureStore = () => createStore(persistedReducer,
+  composeEnhancers(applyMiddleware(
+    thunk,
+    // logger
+  )));
 export default configureStore;

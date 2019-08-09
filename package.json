@@ -7,7 +7,7 @@
     "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug && cd .. && react-native run-android",
     "ios": "react-native run-ios",
     "test": "jest ./tests/**/*.spec.js",
-    "bundle_ios": "react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/release/main.jsbundle --assets-dest ios/release/main.jsbundle",
+    "bundle_ios": "react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios",
     "bundle_android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
   },
   "dependencies": {
@@ -49,6 +49,7 @@
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "rn-placeholder": "3.0.0-alpha.3",
     "xcode": "^2.0.0"
   },
   "devDependencies": {
